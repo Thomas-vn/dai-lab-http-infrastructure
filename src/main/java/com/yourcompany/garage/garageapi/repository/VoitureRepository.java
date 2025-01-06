@@ -20,5 +20,8 @@ public interface VoitureRepository extends JpaRepository<Voiture, Integer> {
     @Query("SELECT v FROM Voiture v WHERE v.numeroChassis = :numeroChassis")
     public Optional<Voiture> findById(String numeroChassis);
 
+    // Find a car collection by its owner
+    @Query("SELECT v FROM Voiture v WHERE v.proprietaire = :proprietaire")
+    public List<Voiture> findByProprietaire(String proprietaire);
 }
 

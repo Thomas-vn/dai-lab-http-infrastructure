@@ -1,5 +1,14 @@
 package com.yourcompany.garage.garageapi.entity;
 
 public enum TypeCouleurs {
-    ROUGE, BLEU, VERT, JAUNE, NOIR, BLANC, GRIS, MARRON, ORANGE, VIOLET
+    Rouge,
+    Bleu,
+    Vert,
+    Jaune,
+    Noir,
+    Blanc,
+    Gris,
+    Marron,
+    Orange,
+    Violet
 }

@@ -1,5 +1,11 @@
 package com.yourcompany.garage.garageapi.entity;
 
 public enum TypeCombustible {
-    ESSENCE, DIESEL, ELECTRIQUE, HYBRIDE, GPL, E85, HYDROGENE
+    Essence,
+    Diesel,
+    Électrique,
+    Hybride,
+    GPL,
+    E85,
+    Hydrogène
 }

@@ -14,7 +14,7 @@ public abstract class Personne {
 
     @Id
     @Column(name = "noavs")
-    private Integer noAVS;
+    private Long noAVS;
 
     @Column(name = "nom", nullable = false, length = 50)
     private String nom;
