@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html>
+        <head>
+        <meta charset="UTF-8">
+        <title>Garage Management UI</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Garage Management UI</h1>
+
+<!-- List All Reparations -->
+<div class="section">
+    <h2>All Reparations</h2>
+    <button class="btn btn-primary" id="listReparationsBtn">List All Reparations</button>
+    <table class="table table-striped" id="reparationsTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Prix</th>
+            <th>Date Debut</th>
+            <th>Date Fin</th>
+            <th>Numero Chassis</th>
+            <th>Lieu ID</th>
+            <th>Date Ajout</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Reparations will be populated here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Reparation -->
+<div class="section">
+    <h2>Add New Reparation</h2>
+    <form id="addReparationForm">
+        <div class="mb-3">
+            <label for="prix" class="form-label">Prix</label>
+            <input type="number" step="0.01" class="form-control" id="prix" required>
+        </div>
+        <div class="mb-3">
+            <label for="dateDebut" class="form-label">Date Debut</label>
+            <input type="date" class="form-control" id="dateDebut" required>
+        </div>
+        <div class="mb-3">
+            <label for="dateFin" class="form-label">Date Fin</label>
+            <input type="date" class="form-control" id="dateFin">
+        </div>
+        <div class="mb-3">
+            <label for="numeroChassis" class="form-label">Numero Chassis</label>
+            <input type="text" class="form-control" id="numeroChassis" required>
+        </div>
+        <div class="mb-3">
+            <label for="lieuId" class="form-label">Lieu ID</label>
+            <input type="number" class="form-control" id="lieuId" required>
+        </div>
+        <div class="mb-3">
+            <label for="dateAjout" class="form-label">Date Ajout</label>
+            <input type="date" class="form-control" id="dateAjout" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Reparation</button>
+    </form>
+</div>
+
+<!-- Update Reparation -->
+<div class="section">
+    <h2>Update Reparation</h2>
+    <form id="updateReparationForm">
+        <div class="mb-3">
+            <label for="updateReparationID" class="form-label">Reparation ID</label>
+            <input type="number" class="form-control" id="updateReparationID" required>
+        </div>
+        <div class="mb-3">
+            <label for="updatePrix" class="form-label">Prix</label>
+            <input type="number" step="0.01" class="form-control" id="updatePrix">
+        </div>
+        <div class="mb-3">
+            <label for="updateDateDebut" class="form-label">Date Debut</label>
+            <input type="date" class="form-control" id="updateDateDebut">
+        </div>
+        <div class="mb-3">
+            <label for="updateDateFin" class="form-label">Date Fin</label>
+            <input type="date" class="form-control" id="updateDateFin">
+        </div>
+        <div class="mb-3">
+            <label for="updateNumeroChassis" class="form-label">Numero Chassis</label>
+            <input type="text" class="form-control" id="updateNumeroChassis">
+        </div>
+        <div class="mb-3">
+            <label for="updateLieuId" class="form-label">Lieu ID</label>
+            <input type="number" class="form-control" id="updateLieuId">
+        </div>
+        <div class="mb-3">
+            <label for="updateDateAjout" class="form-label">Date Ajout</label>
+            <input type="date" class="form-control" id="updateDateAjout">
+        </div>
+        <button type="submit" class="btn btn-warning">Update Reparation</button>
+    </form>
+</div>
+
+<!-- Delete Reparation -->
+<div class="section">
+    <h2>Delete Reparation</h2>
+    <form id="deleteReparationForm">
+        <div class="mb-3">
+            <label for="deleteReparationID" class="form-label">Reparation ID</label>
+            <input type="number" class="form-control" id="deleteReparationID" required>
+        </div>
+        <button type="submit" class="btn btn-danger">Delete Reparation</button>
+    </form>
+</div>
+
+<!-- Optional: Add more sections for custom queries -->
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- JavaScript for handling API calls -->
+<script>
+    const API_BASE_URL = 'http://localhost:8080/api/reparations';
+
+    document.getElementById('listReparationsBtn').addEventListener('click', listAllReparations);
+    document.getElementById('addReparationForm').addEventListener('submit', addReparation);
+    document.getElementById('updateReparationForm').addEventListener('submit', updateReparation);
+    document.getElementById('deleteReparationForm').addEventListener('submit', deleteReparation);
+
+    function listAllReparations() {
+        fetch(API_BASE_URL)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#reparationsTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(reparation => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                            <td>${reparation.reparationID}</td>
+                            <td>${reparation.prix}</td>
+                            <td>${reparation.dateDebut}</td>
+                            <td>${reparation.dateFin || ''}</td>
+                            <td>${reparation.numeroChassis.numeroChassis}</td>
+                            <td>${reparation.lieu.lieuId}</td>
+                            <td>${reparation.dateAjout}</td>
+                        `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching reparations:', error);
+                alert('Failed to fetch reparations.');
+            });
+    }
+
+    function addReparation(event) {
+        event.preventDefault();
+        const prix = document.getElementById('prix').value;
+        const dateDebut = document.getElementById('dateDebut').value;
+        const dateFin = document.getElementById('dateFin').value;
+        const numeroChassis = document.getElementById('numeroChassis').value;
+        const lieuId = document.getElementById('lieuId').value;
+        const dateAjout = document.getElementById('dateAjout').value;
+
+        const newReparation = {
+            prix: parseFloat(prix),
+            dateDebut: dateDebut,
+            dateFin: dateFin || null,
+            numeroChassis: {
+                numeroChassis: numeroChassis
+            },
+            lieu: {
+                lieuId: parseInt(lieuId)
+            },
+            dateAjout: dateAjout
+        };
+
+        fetch(API_BASE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newReparation)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Reparation added successfully!');
+                    document.getElementById('addReparationForm').reset();
+                    listAllReparations();
+                } else {
+                    response.json().then(err => {
+                        alert('Failed to add reparation: ' + err.message);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error adding reparation:', error);
+                alert('Failed to add reparation.');
+            });
+    }
+
+    function updateReparation(event) {
+        event.preventDefault();
+        const reparationID = document.getElementById('updateReparationID').value;
+        const prix = document.getElementById('updatePrix').value;
+        const dateDebut = document.getElementById('updateDateDebut').value;
+        const dateFin = document.getElementById('updateDateFin').value;
+        const numeroChassis = document.getElementById('updateNumeroChassis').value;
+        const lieuId = document.getElementById('updateLieuId').value;
+        const dateAjout = document.getElementById('updateDateAjout').value;
+
+        const updatedReparation = {};
+        if (prix) updatedReparation.prix = parseFloat(prix);
+        if (dateDebut) updatedReparation.dateDebut = dateDebut;
+        if (dateFin) updatedReparation.dateFin = dateFin;
+        if (numeroChassis) updatedReparation.numeroChassis = { numeroChassis: numeroChassis };
+        if (lieuId) updatedReparation.lieu = { lieuId: parseInt(lieuId) };
+        if (dateAjout) updatedReparation.dateAjout = dateAjout;
+
+        fetch(`${API_BASE_URL}/${reparationID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedReparation)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Reparation updated successfully!');
+                    document.getElementById('updateReparationForm').reset();
+                    listAllReparations();
+                } else {
+                    response.json().then(err => {
+                        alert('Failed to update reparation: ' + err.message);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error updating reparation:', error);
+                alert('Failed to update reparation.');
+            });
+    }
+
+    function deleteReparation(event) {
+        event.preventDefault();
+        const reparationID = document.getElementById('deleteReparationID').value;
+
+        fetch(`${API_BASE_URL}/${reparationID}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Reparation deleted successfully!');
+                    document.getElementById('deleteReparationForm').reset();
+                    listAllReparations();
+                } else {
+                    response.json().then(err => {
+                        alert('Failed to delete reparation: ' + err.message);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting reparation:', error);
+                alert('Failed to delete reparation.');
+            });
+    }
+
+</script>
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>
