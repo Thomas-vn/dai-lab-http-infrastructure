@@ -9,7 +9,10 @@ import com.yourcompany.garage.garageapi.entity.TypeBoiteVitesse;
 import com.yourcompany.garage.garageapi.entity.Personne;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import com.yourcompany.garage.garageapi.repository.VoitureRepository;
+import com.yourcompany.garage.garageapi.specification.VoitureSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -152,5 +155,59 @@ public class VoitureServiceImpl implements VoitureService {
         TypeCarrosserie typeEnum = TypeCarrosserie.valueOf(typeCarrosserie);
         TypeCombustible combustibleEnum = TypeCombustible.valueOf(typeCombustible);
         return voitureRepository.findByTypeCarrosserieAndTypeCombustible(typeEnum, combustibleEnum);
+    }
+
+    @Override
+    public List<Voiture> searchVoitures(
+            Optional<String> marque,
+            Optional<TypeCarrosserie> typeCarrosserie,
+            Optional<TypeCouleurs> couleur,
+            Optional<TypeCombustible> typeCombustible,
+            Optional<TypeBoiteVitesse> typeBoiteVitesse,
+            Optional<Boolean> enVente,
+            Optional<Boolean> neuf,
+            Optional<BigDecimal> prixMin,
+            Optional<BigDecimal> prixMax,
+            Optional<LocalDate> startDate,
+            Optional<LocalDate> endDate,
+            Optional<Integer> nombreKm
+    ) {
+        Specification<Voiture> spec = Specification.where(null);
+
+        if (marque.isPresent()) {
+            spec = spec.and(VoitureSpecifications.hasMarque(marque.get()));
+        }
+        if (typeCarrosserie.isPresent()) {
+            spec = spec.and(VoitureSpecifications.hasTypeCarrosserie(typeCarrosserie.get()));
+        }
+        if (couleur.isPresent()) {
+            spec = spec.and(VoitureSpecifications.hasCouleur(couleur.get()));
+        }
+        if (typeCombustible.isPresent()) {
+            spec = spec.and(VoitureSpecifications.hasTypeCombustible(typeCombustible.get()));
+        }
+        if (typeBoiteVitesse.isPresent()) {
+            spec = spec.and(VoitureSpecifications.hasTypeBoiteVitesse(typeBoiteVitesse.get()));
+        }
+        if (enVente.isPresent()) {
+            spec = spec.and(VoitureSpecifications.isEnVente(enVente.get()));
+        }
+        if (neuf.isPresent()) {
+            spec = spec.and(VoitureSpecifications.isNeuf(neuf.get()));
+        }
+        if (prixMin.isPresent()) {
+            spec = spec.and(VoitureSpecifications.prixGreaterThan(prixMin.get()));
+        }
+        if (prixMax.isPresent()) {
+            spec = spec.and(VoitureSpecifications.prixLessThan(prixMax.get()));
+        }
+        if (startDate.isPresent() && endDate.isPresent()) {
+            spec = spec.and(VoitureSpecifications.dateFabricationBetween(startDate.get(), endDate.get()));
+        }
+        if (nombreKm.isPresent()) {
+            spec = spec.and(VoitureSpecifications.nombreKmGreaterThan(nombreKm.get()));
+        }
+
+        return voitureRepository.findAll((Sort) spec);
     }
 }

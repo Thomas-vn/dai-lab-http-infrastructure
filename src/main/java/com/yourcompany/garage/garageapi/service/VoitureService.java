@@ -2,6 +2,10 @@
 package com.yourcompany.garage.garageapi.service;
 
 import com.yourcompany.garage.garageapi.entity.Voiture;
+import com.yourcompany.garage.garageapi.entity.TypeCarrosserie;
+import com.yourcompany.garage.garageapi.entity.TypeCouleurs;
+import com.yourcompany.garage.garageapi.entity.TypeCombustible;
+import com.yourcompany.garage.garageapi.entity.TypeBoiteVitesse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -49,4 +53,19 @@ public interface VoitureService {
     List<Voiture> getVoituresByCouleurAndEnVente(String couleur, Boolean enVente);
 
     List<Voiture> getVoituresByTypeCarrosserieAndTypeCombustible(String typeCarrosserie, String typeCombustible);
+
+    List<Voiture> searchVoitures(
+            Optional<String> marque,
+            Optional<TypeCarrosserie> typeCarrosserie,
+            Optional<TypeCouleurs> couleur,
+            Optional<TypeCombustible> typeCombustible,
+            Optional<TypeBoiteVitesse> typeBoiteVitesse,
+            Optional<Boolean> enVente,
+            Optional<Boolean> neuf,
+            Optional<BigDecimal> prixMin,
+            Optional<BigDecimal> prixMax,
+            Optional<LocalDate> startDate,
+            Optional<LocalDate> endDate,
+            Optional<Integer> nombreKm
+    );
 }

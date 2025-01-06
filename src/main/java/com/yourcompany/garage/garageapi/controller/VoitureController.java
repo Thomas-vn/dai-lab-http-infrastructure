@@ -1,7 +1,7 @@
 // VoitureController.java
 package com.yourcompany.garage.garageapi.controller;
 
-import com.yourcompany.garage.garageapi.entity.Voiture;
+import com.yourcompany.garage.garageapi.entity.*;
 import com.yourcompany.garage.garageapi.service.VoitureService;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/voitures")
@@ -162,5 +163,37 @@ public class VoitureController {
             @PathVariable String typeCombustible) {
         List<Voiture> voitures = voitureService.getVoituresByTypeCarrosserieAndTypeCombustible(typeCarrosserie, typeCombustible);
         return ResponseEntity.ok(voitures);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Voiture>> searchVoitures(
+            @RequestParam Optional<String> marque,
+            @RequestParam Optional<TypeCarrosserie> typeCarrosserie,
+            @RequestParam Optional<TypeCouleurs> couleur,
+            @RequestParam Optional<TypeCombustible> typeCombustible,
+            @RequestParam Optional<TypeBoiteVitesse> typeBoiteVitesse,
+            @RequestParam Optional<Boolean> enVente,
+            @RequestParam Optional<Boolean> neuf,
+            @RequestParam Optional<BigDecimal> prixMin,
+            @RequestParam Optional<BigDecimal> prixMax,
+            @RequestParam Optional<LocalDate> startDate,
+            @RequestParam Optional<LocalDate> endDate,
+            @RequestParam Optional<Integer> nombreKm
+    ) {
+        List<Voiture> result = voitureService.searchVoitures(
+                marque,
+                typeCarrosserie,
+                couleur,
+                typeCombustible,
+                typeBoiteVitesse,
+                enVente,
+                neuf,
+                prixMin,
+                prixMax,
+                startDate,
+                endDate,
+                nombreKm
+        );
+        return ResponseEntity.ok(result);
     }
 }
