@@ -1,6 +1,5 @@
 package com.yourcompany.garage.garageapi.controller;
 
-import org.springframework.boot.autoconfigure.batch.BatchTransactionManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,26 +9,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ApiController {
 
     /**
-     * Welcome Endpoint
-     * GET /api
-     */
-    @GetMapping
-    public String welcome() {
-        return "Welcome to the Garage API!";
-    }
-
-    @GetMapping("/options")
-    public String getOptions() {
-        return "GET /api/health\nGET /api/info"; // TODO change and add all options
-    }
-
-    /**
      * Health Check Endpoint
      * GET /api/health
      */
     @GetMapping("/health")
     public String healthCheck() {
         return "Garage API is up and running!";
+    }
+
+    /**
+     * Database Status Page
+     * GET /api/databaseStatus
+     */
+    @GetMapping("/databaseStatus")
+    public String databaseStatusPage() {
+        return "databaseStatus";
     }
 
     /**
