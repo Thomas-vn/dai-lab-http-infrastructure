@@ -40,27 +40,6 @@ public class VoitureController {
         return ResponseEntity.ok(voiture);
     }
 
-    // POST create new voiture
-    @PostMapping
-    public ResponseEntity<Voiture> createVoiture(@RequestBody Voiture voiture) {
-        Voiture createdVoiture = voitureService.createVoiture(voiture);
-        return new ResponseEntity<>(createdVoiture, HttpStatus.CREATED);
-    }
-
-    // PUT update existing voiture
-    @PutMapping("/{numeroChassis}")
-    public ResponseEntity<Voiture> updateVoiture(@PathVariable String numeroChassis, @RequestBody Voiture voitureDetails) {
-        Voiture updatedVoiture = voitureService.updateVoiture(numeroChassis, voitureDetails);
-        return ResponseEntity.ok(updatedVoiture);
-    }
-
-    // DELETE voiture
-    @DeleteMapping("/{numeroChassis}")
-    public ResponseEntity<Void> deleteVoiture(@PathVariable String numeroChassis) {
-        voitureService.deleteVoiture(numeroChassis);
-        return ResponseEntity.noContent().build();
-    }
-
     // GET voitures by marque
     @GetMapping("/marque/{marque}")
     public ResponseEntity<List<Voiture>> getVoituresByMarque(@PathVariable String marque) {
@@ -195,5 +174,26 @@ public class VoitureController {
                 nombreKm
         );
         return ResponseEntity.ok(result);
+    }
+
+    // POST create new voiture
+    @PostMapping
+    public ResponseEntity<Voiture> createVoiture(@RequestBody Voiture voiture) {
+        Voiture createdVoiture = voitureService.createVoiture(voiture);
+        return new ResponseEntity<>(createdVoiture, HttpStatus.CREATED);
+    }
+
+    // PUT update existing voiture
+    @PutMapping("/{numeroChassis}")
+    public ResponseEntity<Voiture> updateVoiture(@PathVariable String numeroChassis, @RequestBody Voiture voitureDetails) {
+        Voiture updatedVoiture = voitureService.updateVoiture(numeroChassis, voitureDetails);
+        return ResponseEntity.ok(updatedVoiture);
+    }
+
+    // DELETE voiture
+    @DeleteMapping("/{numeroChassis}")
+    public ResponseEntity<Void> deleteVoiture(@PathVariable String numeroChassis) {
+        voitureService.deleteVoiture(numeroChassis);
+        return ResponseEntity.noContent().build();
     }
 }

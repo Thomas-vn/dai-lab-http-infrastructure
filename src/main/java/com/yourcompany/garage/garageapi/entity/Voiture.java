@@ -74,6 +74,6 @@ public class Voiture {
     private Boolean enVente;
 
     @ManyToOne
-    @JoinColumn(name = "propitiatoire")
+    @JoinColumn(name = "proprietaire")
     private Personne proprietaire;
 }
