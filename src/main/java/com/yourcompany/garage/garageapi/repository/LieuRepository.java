@@ -2,15 +2,20 @@ package com.yourcompany.garage.garageapi.repository;
 
 import com.yourcompany.garage.garageapi.entity.Lieu;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface LieuRepository extends JpaRepository<Lieu, Integer> {
+
+    @Query("SELECT l FROM Lieu l")
+    List<Lieu> findAll();
 
     // Find all Lieu by city (ville)
     @Query("SELECT l FROM Lieu l WHERE l.ville = :ville")
@@ -43,4 +48,16 @@ public interface LieuRepository extends JpaRepository<Lieu, Integer> {
     // Custom query to find all Lieu ordered by the street name (rue)
     @Query("SELECT l FROM Lieu l ORDER BY l.rue ASC")
     List<Lieu> findAllOrderByRue();
+
+    // --INSERTUION --
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO lieu (id, rue, numero, npa, ville) " +
+            "VALUES (:id, :rue, :numero, :npa, :ville)", nativeQuery = true)
+    int insertLieu(@Param("id") Integer id,
+                   @Param("rue") String rue,
+                   @Param("numero") Integer numero,
+                   @Param("npa") Integer npa,
+                   @Param("ville") String ville);
 }
