@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface PersonneRepository extends JpaRepository<Personne, Long> {
 
+    @Query("SELECT p FROM Personne p")
+    List<Personne> findAll();
+
     @Query("SELECT p FROM Personne p WHERE p.nom = :nom")
     List<Personne> findByNom(@Param("nom")String nom);
 

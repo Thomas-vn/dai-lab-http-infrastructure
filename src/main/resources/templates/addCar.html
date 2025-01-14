@@ -1,176 +1,178 @@
-<!-- src/main/resources/templates/addCar.html -->
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Car</title>
-    <!-- Bootstrap CSS for styling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Voiture</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            padding-top: 50px;
             background-color: #f8f9fa;
+            padding-top: 50px;
         }
         .container {
             max-width: 800px;
         }
-        .form-section {
-            margin-bottom: 20px;
+        .form-label {
+            font-weight: bold;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <h1 class="text-center mb-4">Add a New Car</h1>
+    <div class="form-container">
+        <h2 class="text-center mb-4">Create a New Voiture</h2>
+        <form id="voitureForm">
+            <div class="mb-3">
+                <label for="numeroChassis" class="form-label">Numero Chassis:</label>
+                <input type="text" class="form-control" id="numeroChassis" name="numeroChassis" required>
+            </div>
 
-    <form th:action="@{/addCar}" th:object="${voiture}" method="post">
-        <!-- Numero Chassis -->
-        <div class="mb-3">
-            <label for="numeroChassis" class="form-label">Numero Chassis</label>
-            <input type="text" class="form-control" id="numeroChassis" th:field="*{numeroChassis}" placeholder="Enter Numero Chassis" required>
-            <div class="form-text">Unique identifier for the car.</div>
-        </div>
+            <div class="mb-3">
+                <label for="marque" class="form-label">Marque:</label>
+                <input type="text" class="form-control" id="marque" name="marque" required>
+            </div>
 
-        <!-- Marque -->
-        <div class="mb-3">
-            <label for="marque" class="form-label">Marque</label>
-            <input type="text" class="form-control" id="marque" th:field="*{marque}" placeholder="e.g., Toyota" required>
-        </div>
+            <div class="mb-3">
+                <label for="typeCarrosserie" class="form-label">Type Carrosserie:</label>
+                <input type="text" class="form-control" id="typeCarrosserie" name="typeCarrosserie" required>
+            </div>
 
-        <!-- Type Carrosserie -->
-        <div class="mb-3">
-            <label for="typeCarrosserie" class="form-label">Type Carrosserie</label>
-            <select class="form-select" id="typeCarrosserie" th:field="*{typeCarrosserie}" required>
-                <option value="" disabled selected>Select Type Carrosserie</option>
-                <option th:each="type : ${typeCarrosseries}" th:value="${type}" th:text="${type}"></option>
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="couleur" class="form-label">Couleur:</label>
+                <input type="text" class="form-control" id="couleur" name="couleur" required>
+            </div>
 
-        <!-- Couleur -->
-        <div class="mb-3">
-            <label for="couleur" class="form-label">Couleur</label>
-            <select class="form-select" id="couleur" th:field="*{couleur}" required>
-                <option value="" disabled selected>Select Couleur</option>
-                <option th:each="c : ${couleurs}" th:value="${c}" th:text="${c}"></option>
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="dateFabrication" class="form-label">Date Fabrication:</label>
+                <input type="date" class="form-control" id="dateFabrication" name="dateFabrication" required>
+            </div>
 
-        <!-- Date Fabrication -->
-        <div class="mb-3">
-            <label for="dateFabrication" class="form-label">Date Fabrication</label>
-            <input type="date" class="form-control" id="dateFabrication" th:field="*{dateFabrication}" required>
-        </div>
+            <div class="mb-3">
+                <label for="nombrePlaces" class="form-label">Nombre de Places:</label>
+                <input type="number" class="form-control" id="nombrePlaces" name="nombrePlaces" required>
+            </div>
 
-        <!-- Nombre Places -->
-        <div class="mb-3">
-            <label for="nombrePlaces" class="form-label">Nombre de Places</label>
-            <input type="number" class="form-control" id="nombrePlaces" th:field="*{nombrePlaces}" min="1" max="9" required>
-        </div>
+            <div class="mb-3">
+                <label for="prix" class="form-label">Prix:</label>
+                <input type="number" step="0.01" class="form-control" id="prix" name="prix" required>
+            </div>
 
-        <!-- Prix -->
-        <div class="mb-3">
-            <label for="prix" class="form-label">Prix (€)</label>
-            <input type="number" class="form-control" id="prix" th:field="*{prix}" step="0.01" min="0" required>
-        </div>
+            <div class="mb-3">
+                <label for="nombrePortes" class="form-label">Nombre de Portes:</label>
+                <input type="number" class="form-control" id="nombrePortes" name="nombrePortes" required>
+            </div>
 
-        <!-- Nombre Portes -->
-        <div class="mb-3">
-            <label for="nombrePortes" class="form-label">Nombre de Portes</label>
-            <input type="number" class="form-control" id="nombrePortes" th:field="*{nombrePortes}" min="2" max="5" required>
-        </div>
+            <div class="mb-3">
+                <label for="puissance" class="form-label">Puissance:</label>
+                <input type="number" class="form-control" id="puissance" name="puissance" required>
+            </div>
 
-        <!-- Puissance -->
-        <div class="mb-3">
-            <label for="puissance" class="form-label">Puissance (ch)</label>
-            <input type="number" class="form-control" id="puissance" th:field="*{puissance}" min="50" max="1000" required>
-        </div>
+            <div class="mb-3">
+                <label for="descriptionOptions" class="form-label">Description Options:</label>
+                <textarea class="form-control" id="descriptionOptions" name="descriptionOptions"></textarea>
+            </div>
 
-        <!-- Description Options -->
-        <div class="mb-3">
-            <label for="descriptionOptions" class="form-label">Description Options</label>
-            <textarea class="form-control" id="descriptionOptions" th:field="*{descriptionOptions}" rows="3" placeholder="Describe additional options"></textarea>
-        </div>
+            <div class="mb-3">
+                <label for="dateExpertise" class="form-label">Date Expertise:</label>
+                <input type="date" class="form-control" id="dateExpertise" name="dateExpertise" required>
+            </div>
 
-        <!-- Date Expertise -->
-        <div class="mb-3">
-            <label for="dateExpertise" class="form-label">Date Expertise</label>
-            <input type="date" class="form-control" id="dateExpertise" th:field="*{dateExpertise}">
-        </div>
+            <div class="mb-3">
+                <label for="typeCombustible" class="form-label">Type Combustible:</label>
+                <input type="text" class="form-control" id="typeCombustible" name="typeCombustible" required>
+            </div>
 
-        <!-- Type Combustible -->
-        <div class="mb-3">
-            <label for="typeCombustible" class="form-label">Type Combustible</label>
-            <select class="form-select" id="typeCombustible" th:field="*{typeCombustible}" required>
-                <option value="" disabled selected>Select Type Combustible</option>
-                <option th:each="t : ${typeCombustibles}" th:value="${t}" th:text="${t}"></option>
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="nombreKm" class="form-label">Nombre Km:</label>
+                <input type="number" class="form-control" id="nombreKm" name="nombreKm" required>
+            </div>
 
-        <!-- Nombre Km -->
-        <div class="mb-3">
-            <label for="nombreKm" class="form-label">Nombre de Km</label>
-            <input type="number" class="form-control" id="nombreKm" th:field="*{nombreKm}" min="0" required>
-        </div>
+            <div class="mb-3">
+                <label for="typeBoiteVitesse" class="form-label">Type Boite Vitesse:</label>
+                <input type="text" class="form-control" id="typeBoiteVitesse" name="typeBoiteVitesse" required>
+            </div>
 
-        <!-- Type Boite Vitesse -->
-        <div class="mb-3">
-            <label for="typeBoiteVitesse" class="form-label">Type Boite Vitesse</label>
-            <select class="form-select" id="typeBoiteVitesse" th:field="*{typeBoiteVitesse}" required>
-                <option value="" disabled selected>Select Type Boite Vitesse</option>
-                <option th:each="t : ${typeBoiteVitesseList}" th:value="${t}" th:text="${t}"></option>
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="consommation" class="form-label">Consommation:</label>
+                <input type="number" step="0.01" class="form-control" id="consommation" name="consommation" required>
+            </div>
 
-        <!-- Consommation -->
-        <div class="mb-3">
-            <label for="consommation" class="form-label">Consommation (l/100km)</label>
-            <input type="number" class="form-control" id="consommation" th:field="*{consommation}" step="0.1" min="0" required>
-        </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="neuf" name="neuf">
+                <label class="form-check-label" for="neuf">Neuf</label>
+            </div>
 
-        <!-- Neuf -->
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="neuf" th:field="*{neuf}">
-            <label class="form-check-label" for="neuf">Neuf</label>
-        </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="garantie" name="garantie">
+                <label class="form-check-label" for="garantie">Garantie</label>
+            </div>
 
-        <!-- Garantie -->
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="garantie" th:field="*{garantie}">
-            <label class="form-check-label" for="garantie">Garantie</label>
-        </div>
+            <div class="mb-3">
+                <label for="dateFinGarantie" class="form-label">Date Fin Garantie:</label>
+                <input type="date" class="form-control" id="dateFinGarantie" name="dateFinGarantie">
+            </div>
 
-        <!-- Date Fin Garantie -->
-        <div class="mb-3">
-            <label for="dateFinGarantie" class="form-label">Date Fin Garantie</label>
-            <input type="date" class="form-control" id="dateFinGarantie" th:field="*{dateFinGarantie}">
-        </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="enVente" name="enVente">
+                <label class="form-check-label" for="enVente">En Vente</label>
+            </div>
 
-        <!-- En Vente -->
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="enVente" th:field="*{enVente}">
-            <label class="form-check-label" for="enVente">En Vente</label>
-        </div>
-
-        <!-- Propriétaire NoAVS -->
-        <div class="mb-3">
-            <label for="noAVS" class="form-label">Propriétaire NoAVS</label>
-            <input type="number" class="form-control" id="noAVS" th:field="*{proprietaire.noAVS}" min="0" required>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-success">Add Car</button>
-    </form>
-
-    <!-- Display Success or Error Messages -->
-    <div th:if="${successMessage}" class="alert alert-success mt-3" role="alert">
-        <p th:text="${successMessage}"></p>
-    </div>
-    <div th:if="${errorMessage}" class="alert alert-danger mt-3" role="alert">
-        <p th:text="${errorMessage}"></p>
+            <button type="submit" class="btn btn-custom">Create Voiture</button>
+        </form>
     </div>
 </div>
 
-<!-- Bootstrap JS and Dependencies -->
+<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('voitureForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent default form submission
+
+        // Create a JavaScript object from the form data
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        // Make the AJAX request
+        fetch('/api/voitures', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',  // Set Content-Type to JSON
+            },
+            body: JSON.stringify(data)  // Convert the data to JSON
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Voiture created successfully!');
+                } else {
+                    alert('Error creating voiture');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+    });
+</script>
+
 </body>
 </html>

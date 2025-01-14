@@ -8,9 +8,11 @@ import com.yourcompany.garage.garageapi.entity.TypeCouleurs;
 import com.yourcompany.garage.garageapi.entity.TypeCombustible;
 import com.yourcompany.garage.garageapi.entity.TypeBoiteVitesse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,25 +22,10 @@ import java.util.Optional;
 @Repository
 public interface VoitureRepository extends JpaRepository<Voiture, String> {
 
-    // Find all voitures
-    @Query("SELECT v FROM Voiture v")
-    List<Voiture> findAll();
-
-    // Find voiture by NumeroChassis
-    @Query("SELECT v FROM Voiture v WHERE v.numeroChassis = :numeroChassis")
-    Optional<Voiture> findById(@Param("numeroChassis") String numeroChassis);
-
-    // Find voitures by marque
-    @Query("SELECT v FROM Voiture v WHERE v.marque = :marque")
-    List<Voiture> findByMarque(@Param("marque") String marque);
-
-    // Find voitures by typeCarrosserie
-    @Query("SELECT v FROM Voiture v WHERE v.typeCarrosserie = :typeCarrosserie")
-    List<Voiture> findByTypeCarrosserie(@Param("typeCarrosserie") TypeCarrosserie typeCarrosserie);
-
+    /*
     // Find voitures by couleur
-    @Query("SELECT v FROM Voiture v WHERE v.couleur = :couleur")
-    List<Voiture> findByCouleur(@Param("couleur") TypeCouleurs couleur);
+    @Query(value = "SELECT v FROM Voiture v WHERE v.couleur = :couleur", nativeQuery = true)
+    List<Voiture> findByCouleur(@Param("couleur") String couleur);
 
     // Find voitures by typeCombustible
     @Query("SELECT v FROM Voiture v WHERE v.typeCombustible = :typeCombustible")
@@ -87,4 +74,57 @@ public interface VoitureRepository extends JpaRepository<Voiture, String> {
     // Find voitures by typeCarrosserie and typeCombustible
     @Query("SELECT v FROM Voiture v WHERE v.typeCarrosserie = :typeCarrosserie AND v.typeCombustible = :typeCombustible")
     List<Voiture> findByTypeCarrosserieAndTypeCombustible(@Param("typeCarrosserie") TypeCarrosserie typeCarrosserie, @Param("typeCombustible") TypeCombustible typeCombustible);
+
+    @Query("INSERT INTO Voiture v VALUES (:voiture)")
+    void addCar(Voiture voiture);
+    */
+
+    // Find all voitures
+    @Query("SELECT v FROM Voiture v")
+    List<Voiture> findAll();
+
+    // Find voiture by NumeroChassis
+    @Query("SELECT v FROM Voiture v WHERE v.numeroChassis = :numeroChassis")
+    Optional<Voiture> findById(@Param("numeroChassis") String numeroChassis);
+
+    // Find voitures by marque
+    @Query("SELECT v FROM Voiture v WHERE v.marque = :marque")
+    List<Voiture> findByMarque(@Param("marque") String marque);
+
+    // Find voitures by typeCarrosserie
+    @Query("SELECT v FROM Voiture v WHERE v.typeCarrosserie = :typeCarrosserie")
+    List<Voiture> findByTypeCarrosserie(@Param("typeCarrosserie") TypeCarrosserie typeCarrosserie);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO Voiture (NumeroChassis, Marque, TypeCarrosserie, Couleur, DateFabrication, " +
+            "NombrePlaces, Prix, NombrePortes, Puissance, DescriptionOptions, DateExpertise, " +
+            "TypeCombustible, NombreKm, TypeBoiteVitesse, Consommation, Neuf, Garantie, DateFinGarantie, " +
+            "EnVente, Proprietaire) " +
+            "VALUES (:numeroChassis, :marque, :typeCarrosserie, :couleur, :dateFabrication, " +
+            ":nombrePlaces, :prix, :nombrePortes, :puissance, :descriptionOptions, :dateExpertise, " +
+            ":typeCombustible, :nombreKm, :typeBoiteVitesse, :consommation, :neuf, :garantie, :dateFinGarantie, " +
+            ":enVente, :proprietaire)",
+            nativeQuery = true)
+    int insertVoiture(@Param("numeroChassis") String numeroChassis,
+                      @Param("marque") String marque,
+                      @Param("typeCarrosserie") String typeCarrosserie,
+                      @Param("couleur") String couleur,
+                      @Param("dateFabrication") LocalDate dateFabrication,
+                      @Param("nombrePlaces") int nombrePlaces,
+                      @Param("prix") BigDecimal prix,
+                      @Param("nombrePortes") int nombrePortes,
+                      @Param("puissance") int puissance,
+                      @Param("descriptionOptions") String descriptionOptions,
+                      @Param("dateExpertise") LocalDate dateExpertise,
+                      @Param("typeCombustible") String typeCombustible,
+                      @Param("nombreKm") int nombreKm,
+                      @Param("typeBoiteVitesse") String typeBoiteVitesse,
+                      @Param("consommation") BigDecimal consommation,
+                      @Param("neuf") boolean neuf,
+                      @Param("garantie") boolean garantie,
+                      @Param("dateFinGarantie") LocalDate dateFinGarantie,
+                      @Param("enVente") boolean enVente,
+                      @Param("proprietaire") Long proprietaire);
 }
+

@@ -13,11 +13,28 @@ public class PageController {
         return "welcome";
     }
 
+    /**
+     * Database Status Page
+     * GET /api/databaseStatus
+     */
+    @GetMapping("/databaseStatus")
+    public String databaseStatusPage() {
+        return "databaseStatus";
+    }
+
+    /**
+     * Search Auto Page
+     * GET /api/searchAuto
+     */
     @GetMapping("/searchAuto")
     public String searchAutoPage() {
         return "searchAuto";
     }
 
+    /**
+     * Add Car Page
+     * GET /api/addCar
+     */
     @GetMapping("/addCar")
     public String addCarPage() {
         return "addCar";

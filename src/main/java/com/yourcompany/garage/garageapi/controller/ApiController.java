@@ -18,15 +18,6 @@ public class ApiController {
     }
 
     /**
-     * Database Status Page
-     * GET /api/databaseStatus
-     */
-    @GetMapping("/databaseStatus")
-    public String databaseStatusPage() {
-        return "databaseStatus";
-    }
-
-    /**
      * API Information Endpoint
      * GET /api/info
      */

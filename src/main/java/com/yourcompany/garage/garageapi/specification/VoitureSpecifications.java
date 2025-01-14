@@ -67,4 +67,5 @@ public class VoitureSpecifications {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.greaterThanOrEqualTo(root.get("nombreKm"), nombreKm);
     }
+
 }

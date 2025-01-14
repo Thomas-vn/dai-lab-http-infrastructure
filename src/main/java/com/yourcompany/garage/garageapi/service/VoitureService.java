@@ -18,8 +18,6 @@ public interface VoitureService {
 
     Optional<Voiture> getVoitureByNumeroChassis(String numeroChassis);
 
-    Voiture createVoiture(Voiture voiture);
-
     Voiture updateVoiture(String numeroChassis, Voiture voitureDetails);
 
     void deleteVoiture(String numeroChassis);
@@ -30,6 +28,7 @@ public interface VoitureService {
 
     List<Voiture> getVoituresByTypeCarrosserie(String typeCarrosserie);
 
+    /*
     List<Voiture> getVoituresByCouleur(String couleur);
 
     List<Voiture> getVoituresByTypeCombustible(String typeCombustible);
@@ -54,6 +53,7 @@ public interface VoitureService {
 
     List<Voiture> getVoituresByTypeCarrosserieAndTypeCombustible(String typeCarrosserie, String typeCombustible);
 
+     */
     List<Voiture> searchVoitures(
             Optional<String> marque,
             Optional<TypeCarrosserie> typeCarrosserie,
@@ -68,4 +68,9 @@ public interface VoitureService {
             Optional<LocalDate> endDate,
             Optional<Integer> nombreKm
     );
+
+
+    // -----INSERTION-----
+
+    public void insertVoiture(Voiture voiture);
 }

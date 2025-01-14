@@ -54,7 +54,9 @@ public class VoitureController {
         return ResponseEntity.ok(voitures);
     }
 
-    // GET voitures by couleur
+    /*
+
+    // GET voitures by couleurs
     @GetMapping("/couleur/{couleur}")
     public ResponseEntity<List<Voiture>> getVoituresByCouleur(@PathVariable String couleur) {
         List<Voiture> voitures = voitureService.getVoituresByCouleur(couleur);
@@ -144,6 +146,8 @@ public class VoitureController {
         return ResponseEntity.ok(voitures);
     }
 
+    */
+
     @GetMapping("/search")
     public ResponseEntity<List<Voiture>> searchVoitures(
             @RequestParam Optional<String> marque,
@@ -178,9 +182,8 @@ public class VoitureController {
 
     // POST create new voiture
     @PostMapping
-    public ResponseEntity<Voiture> createVoiture(@RequestBody Voiture voiture) {
-        Voiture createdVoiture = voitureService.createVoiture(voiture);
-        return new ResponseEntity<>(createdVoiture, HttpStatus.CREATED);
+    public void createVoiture(@RequestBody Voiture voiture) {
+        voitureService.insertVoiture(voiture);
     }
 
     // PUT update existing voiture

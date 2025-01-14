@@ -13,6 +13,7 @@ import com.yourcompany.garage.garageapi.specification.VoitureSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -38,11 +39,6 @@ public class VoitureServiceImpl implements VoitureService {
     @Override
     public Optional<Voiture> getVoitureByNumeroChassis(String numeroChassis) {
         return voitureRepository.findById(numeroChassis);
-    }
-
-    @Override
-    public Voiture createVoiture(Voiture voiture) {
-        return voitureRepository.save(voiture);
     }
 
     @Override
@@ -91,10 +87,11 @@ public class VoitureServiceImpl implements VoitureService {
         return voitureRepository.findByTypeCarrosserie(type);
     }
 
+    /*
     @Override
     public List<Voiture> getVoituresByCouleur(String couleur) {
-        TypeCouleurs couleurEnum = TypeCouleurs.valueOf(couleur);
-        return voitureRepository.findByCouleur(couleurEnum);
+        //TypeCouleurs couleurEnum = TypeCouleurs.valueOf(couleur);
+        return voitureRepository.findByCouleur(couleur);
     }
 
     @Override
@@ -156,6 +153,7 @@ public class VoitureServiceImpl implements VoitureService {
         TypeCombustible combustibleEnum = TypeCombustible.valueOf(typeCombustible);
         return voitureRepository.findByTypeCarrosserieAndTypeCombustible(typeEnum, combustibleEnum);
     }
+    */
 
     @Override
     public List<Voiture> searchVoitures(
@@ -209,5 +207,32 @@ public class VoitureServiceImpl implements VoitureService {
         }
 
         return voitureRepository.findAll((Sort) spec);
+    }
+
+
+    //--------INSERT--------
+
+    @Override
+    public void insertVoiture(Voiture voiture) {
+        voitureRepository.insertVoiture(voiture.getNumeroChassis(),
+                voiture.getMarque(),
+                voiture.getTypeCarrosserie().toString(),
+                voiture.getCouleur().toString(),
+                voiture.getDateFabrication(),
+                voiture.getNombrePlaces(),
+                voiture.getPrix(),
+                voiture.getNombrePortes(),
+                voiture.getPuissance(),
+                voiture.getDescriptionOptions(),
+                voiture.getDateExpertise(),
+                voiture.getTypeCombustible().toString(),
+                voiture.getNombreKm(),
+                voiture.getTypeBoiteVitesse().toString(),
+                voiture.getConsommation(),
+                voiture.getNeuf(),
+                voiture.getGarantie(),
+                voiture.getDateFinGarantie(),
+                voiture.getEnVente(),
+                voiture.getProprietaire().getNoAVS());
     }
 }
