@@ -26,4 +26,9 @@ public class LieuServiceImpl implements LieuService {
     public int insertLieu(Lieu lieu) {
         return lieuRepository.insertLieu(lieu.getId(), lieu.getRue(), lieu.getNumero(), lieu.getNpa(), lieu.getVille());
     }
+
+    @Override
+    public int deleteLieu(Integer id){
+        return lieuRepository.deleteLieuQuery(id);
+    }
 }

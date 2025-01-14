@@ -60,4 +60,9 @@ public interface LieuRepository extends JpaRepository<Lieu, Integer> {
                    @Param("numero") Integer numero,
                    @Param("npa") Integer npa,
                    @Param("ville") String ville);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM lieu WHERE id = :id", nativeQuery = true)
+    int deleteLieuQuery(@Param("id") Integer id);
 }

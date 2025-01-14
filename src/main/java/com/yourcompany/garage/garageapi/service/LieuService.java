@@ -12,4 +12,7 @@ public interface LieuService {
 
     int insertLieu(Lieu lieu);
 
+    // --Suppression --
+
+    int deleteLieu(Integer id);
 }

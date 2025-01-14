@@ -2,11 +2,9 @@ package com.yourcompany.garage.garageapi.controller;
 
 import com.yourcompany.garage.garageapi.entity.Lieu;
 import com.yourcompany.garage.garageapi.service.LieuService;
+import com.yourcompany.garage.garageapi.dto.IdDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/lieu")
@@ -21,8 +19,12 @@ public class LieuController {
     }
 
     @PostMapping
-    public int insertLieu(Lieu lieu) {
+    public int insertLieu(@RequestBody Lieu lieu) {
         return lieuService.insertLieu(lieu);
     }
 
+    @DeleteMapping
+    public int deleteLieu(@RequestBody IdDTO id) {
+        return lieuService.deleteLieu(id.getId());
+    }
 }
