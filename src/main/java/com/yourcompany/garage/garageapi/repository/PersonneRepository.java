@@ -11,13 +11,13 @@ import java.util.List;
 @Repository
 public interface PersonneRepository extends JpaRepository<Personne, Long> {
 
-    @Query("SELECT p FROM Personne p")
+    @Query(value = "SELECT p FROM Personne p", nativeQuery = true)
     List<Personne> findAll();
 
-    @Query("SELECT p FROM Personne p WHERE p.nom = :nom")
+    @Query(value = "SELECT p FROM Personne p WHERE p.nom = :nom", nativeQuery = true)
     List<Personne> findByNom(@Param("nom")String nom);
 
-    @Query("SELECT p FROM Personne p WHERE p.nom = :nom")
+    @Query(value = "SELECT p FROM Personne p WHERE p.nom = :nom", nativeQuery = true)
     List<Personne> findPersonneByExactNom(@Param("nom") String nom);
 
     @Query("SELECT p FROM Personne p WHERE p.nom LIKE %:nom%")

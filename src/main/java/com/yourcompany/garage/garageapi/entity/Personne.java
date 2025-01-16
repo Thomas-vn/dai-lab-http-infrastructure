@@ -5,12 +5,13 @@ import jakarta.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import lombok.Data;
+import org.hibernate.annotations.Polymorphism;
 
 @Entity
 @Table(name = "personne")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
-public abstract class Personne {
+public class Personne {
 
     @Id
     @Column(name = "noavs")
@@ -26,13 +27,10 @@ public abstract class Personne {
     private LocalDate dateNaissance;
 
     @Column(name = "sexe", nullable = false, length = 1)
-    @Enumerated(EnumType.STRING)
-    private Sex sexe;
+    private Character sexe;
 
     @ManyToOne
     @JoinColumn(name = "lieuid")
     private Lieu lieu;
 
-
-    private enum Sex { M, F};
 }

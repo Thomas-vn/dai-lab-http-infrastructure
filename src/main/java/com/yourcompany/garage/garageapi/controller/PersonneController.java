@@ -19,9 +19,9 @@ public class PersonneController {
 
     // Get all Clients
     @GetMapping
-    public ResponseEntity<List<Personne>> getAllClients() {
-        List<Personne> clients = personneService.getAllPersonnes();
-        return ResponseEntity.ok(clients);
+    public ResponseEntity<List<Personne>> getAllPersonnes() {
+        List<Personne> personnes = personneService.getAllPersonnes();
+        return ResponseEntity.ok(personnes);
     }
 
 }

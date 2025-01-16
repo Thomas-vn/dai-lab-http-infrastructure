@@ -5,11 +5,14 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Data;
+import org.hibernate.annotations.Polymorphism;
+import org.hibernate.annotations.PolymorphismType;
 
 @Entity
 @Table(name = "personnel")
 @Data
 @PrimaryKeyJoinColumn(name = "noavs")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Personnel extends Personne {
 
     @Column(name = "salaire", nullable = false, precision = 10, scale = 2)
