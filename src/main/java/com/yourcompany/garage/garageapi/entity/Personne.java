@@ -1,11 +1,8 @@
 package com.yourcompany.garage.garageapi.entity;
 
 import jakarta.persistence.*;
-
-import java.math.BigInteger;
 import java.time.LocalDate;
 import lombok.Data;
-import org.hibernate.annotations.Polymorphism;
 
 @Entity
 @Table(name = "personne")
@@ -32,5 +29,4 @@ public class Personne {
     @ManyToOne
     @JoinColumn(name = "lieuid")
     private Lieu lieu;
-
 }

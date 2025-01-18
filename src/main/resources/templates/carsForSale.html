@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Voitures à Vendre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Voitures à Vendre</h1>
+
+        <!-- Alert for feedback messages -->
+        <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="marqueFilter" class="form-label">Marque</label>
+                        <input type="text" class="form-control" id="marqueFilter">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="typeCarrosserieFilter" class="form-label">Type de Carrosserie</label>
+                        <select class="form-control" id="typeCarrosserieFilter">
+                            <option value="">Tous</option>
+                            <option value="Break">Break</option>
+                            <option value="Cabriolet">Cabriolet</option>
+                            <option value="Pick-up">Pick-up</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Coupe">Coupé</option>
+                            <option value="Berline">Berline</option>
+                            <option value="Compacte">Compacte</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="prixMinFilter" class="form-label">Prix Min (CHF)</label>
+                        <input type="number" class="form-control" id="prixMinFilter">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="prixMaxFilter" class="form-label">Prix Max (CHF)</label>
+                        <input type="number" class="form-control" id="prixMaxFilter">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Filtrer
+                </button>
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i class="fas fa-undo"></i> Réinitialiser
+                </button>
+            </div>
+        </div>
+
+        <!-- Cars Grid -->
+        <div class="row" id="carsGrid">
+        </div>
+    </div>
+
+    <!-- Car Details Modal -->
+    <div class="modal fade" id="carDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Détails de la Voiture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="/images/car-placeholder.jpg" class="img-fluid rounded" alt="Voiture">
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table">
+                                <tr>
+                                    <th>Numéro de Chassis:</th>
+                                    <td id="modalNumeroChassis"></td>
+                                </tr>
+                                <tr>
+                                    <th>Marque:</th>
+                                    <td id="modalMarque"></td>
+                                </tr>
+                                <tr>
+                                    <th>Type:</th>
+                                    <td id="modalType"></td>
+                                </tr>
+                                <tr>
+                                    <th>Prix:</th>
+                                    <td id="modalPrix"></td>
+                                </tr>
+                                <tr>
+                                    <th>Kilométrage:</th>
+                                    <td id="modalKilometrage"></td>
+                                </tr>
+                                <tr>
+                                    <th>Année:</th>
+                                    <td id="modalAnnee"></td>
+                                </tr>
+                                <tr>
+                                    <th>Options:</th>
+                                    <td id="modalOptions"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentCars = [];
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('fr-CH', {
+                style: 'currency',
+                currency: 'CHF'
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('fr-CH');
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.classList.remove('d-none');
+            setTimeout(() => alert.classList.add('d-none'), 3000);
+        }
+
+        function createCarCard(car) {
+            return `
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="/images/car-placeholder.jpg" class="card-img-top" alt="Voiture">
+                        <div class="card-body">
+                            <h5 class="card-title">${car.marque}</h5>
+                            <p class="card-text">
+                                <strong>Prix:</strong> ${formatMoney(car.prix)}<br>
+                                <strong>Type:</strong> ${car.typeCarrosserie}<br>
+                                <strong>Kilométrage:</strong> ${car.nombreKm} km
+                            </p>
+                            <button class="btn btn-primary" onclick="showCarDetails('${car.numeroChassis}')">
+                                <i class="fas fa-info-circle"></i> Détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadCars() {
+            const marque = document.getElementById('marqueFilter').value;
+            const typeCarrosserie = document.getElementById('typeCarrosserieFilter').value;
+            const prixMin = document.getElementById('prixMinFilter').value;
+            const prixMax = document.getElementById('prixMaxFilter').value;
+
+            let url = '/api/ventes/voitures?enVente=true';
+            if (marque) url += `&marque=${encodeURIComponent(marque)}`;
+            if (typeCarrosserie) url += `&typeCarrosserie=${encodeURIComponent(typeCarrosserie)}`;
+            if (prixMin) url += `&prixMin=${encodeURIComponent(prixMin)}`;
+            if (prixMax) url += `&prixMax=${encodeURIComponent(prixMax)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(cars => {
+                    currentCars = cars;
+                    const carsGrid = document.getElementById('carsGrid');
+                    if (cars.length === 0) {
+                        carsGrid.innerHTML = '<div class="col-12"><div class="alert alert-info">Aucune voiture ne correspond à vos critères.</div></div>';
+                    } else {
+                        carsGrid.innerHTML = cars.map(car => createCarCard(car)).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('Erreur lors du chargement des voitures', 'danger');
+                });
+        }
+
+        function showCarDetails(numeroChassis) {
+            const car = currentCars.find(c => c.numeroChassis === numeroChassis);
+            if (car) {
+                document.getElementById('modalNumeroChassis').textContent = car.numeroChassis;
+                document.getElementById('modalMarque').textContent = car.marque;
+                document.getElementById('modalType').textContent = car.typeCarrosserie;
+                document.getElementById('modalPrix').textContent = formatMoney(car.prix);
+                document.getElementById('modalKilometrage').textContent = `${car.nombreKm} km`;
+                document.getElementById('modalAnnee').textContent = formatDate(car.dateFabrication);
+                document.getElementById('modalOptions').textContent = car.descriptionOptions || 'Aucune option spécifiée';
+
+                const modal = new bootstrap.Modal(document.getElementById('carDetailsModal'));
+                modal.show();
+            }
+        }
+
+        function applyFilters() {
+            loadCars();
+        }
+
+        function resetFilters() {
+            document.getElementById('marqueFilter').value = '';
+            document.getElementById('typeCarrosserieFilter').value = '';
+            document.getElementById('prixMinFilter').value = '';
+            document.getElementById('prixMaxFilter').value = '';
+            loadCars();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCars);
+    </script>
+</body>
+</html>

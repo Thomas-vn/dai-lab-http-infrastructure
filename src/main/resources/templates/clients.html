@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Clients</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Gestion des Clients</h1>
+
+        <!-- Button to trigger new client modal -->
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addClientModal">
+            <i class="fas fa-plus"></i> Nouveau Client
+        </button>
+
+        <!-- Alert for feedback messages -->
+        <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+        <!-- Clients Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No AVS</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Date d'ajout</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div class="modal fade" id="addClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addClientForm">
+                        <div class="mb-3">
+                            <label for="noAVS" class="form-label">No AVS</label>
+                            <input type="number" class="form-control" id="noAVS" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nom" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="nom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="prenom" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="prenom" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="createClient()">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Client Modal -->
+    <div class="modal fade" id="editClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editClientForm">
+                        <input type="hidden" id="editNoAVS">
+                        <div class="mb-3">
+                            <label for="editNom" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="editNom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrenom" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="editPrenom" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="updateClient()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentClients = [];
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-CH');
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.classList.remove('d-none');
+            setTimeout(() => alert.classList.add('d-none'), 3000);
+        }
+
+        function loadClients() {
+            fetch('/api/clients')
+                .then(response => response.json())
+                .then(clients => {
+                    currentClients = clients;
+                    const tbody = document.getElementById('clientsTableBody');
+                    tbody.innerHTML = '';
+                    clients.forEach(client => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${client.noAVS || '-'}</td>
+                            <td>${client.nom || '-'}</td>
+                            <td>${client.prenom || '-'}</td>
+                            <td>${formatDate(client.dateAjout)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="openEditModal(${client.noAVS})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.noAVS})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showAlert('Erreur lors du chargement des données', 'danger');
+                });
+        }
+
+        function createClient() {
+            const client = {
+                noAVS: document.getElementById('noAVS').value,
+                nom: document.getElementById('nom').value,
+                prenom: document.getElementById('prenom').value
+            };
+
+            fetch('/api/clients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(client)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la création');
+                return response.json();
+            })
+            .then(() => {
+                showAlert('Client créé avec succès', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
+                document.getElementById('addClientForm').reset();
+                loadClients();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors de la création du client', 'danger');
+            });
+        }
+
+        function openEditModal(noAVS) {
+            const client = currentClients.find(c => c.noAVS === noAVS);
+            if (client) {
+                document.getElementById('editNoAVS').value = client.noAVS;
+                document.getElementById('editNom').value = client.nom;
+                document.getElementById('editPrenom').value = client.prenom;
+                new bootstrap.Modal(document.getElementById('editClientModal')).show();
+            }
+        }
+
+        function updateClient() {
+            const noAVS = document.getElementById('editNoAVS').value;
+            const client = {
+                nom: document.getElementById('editNom').value,
+                prenom: document.getElementById('editPrenom').value
+            };
+
+            fetch(`/api/clients/${noAVS}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(client)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la modification');
+                return response.json();
+            })
+            .then(() => {
+                showAlert('Client modifié avec succès', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('editClientModal')).hide();
+                loadClients();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors de la modification du client', 'danger');
+            });
+        }
+
+        function deleteClient(noAVS) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
+                fetch(`/api/clients/${noAVS}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Erreur lors de la suppression');
+                    showAlert('Client supprimé avec succès', 'success');
+                    loadClients();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showAlert('Erreur lors de la suppression du client', 'danger');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadClients);
+    </script>
+</body>
+</html>

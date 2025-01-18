@@ -30,6 +30,13 @@
         .btn-custom:hover {
             background-color: #0056b3;
         }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        .radio-group .form-check {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -50,12 +57,30 @@
 
             <div class="mb-3">
                 <label for="typeCarrosserie" class="form-label">Type Carrosserie:</label>
-                <input type="text" class="form-control" id="typeCarrosserie" name="typeCarrosserie" required>
+                <select class="form-select" id="typeCarrosserie" name="typeCarrosserie" required>
+                    <option value="" disabled selected>Select Type Carrosserie</option>
+                    <option value="SUV">SUV</option>
+                    <option value="CABRIOLET">CABRIOLET</option>
+                    <option value="BREAK">BREAK</option>
+                    <option value="BERLINE">BERLINE</option>
+                    <option value="COMPACTE">COMPACTE</option>
+                    <option value="PICK_UP">PICK_UP</option>
+                    <option value="COUPE">COUPE</option>
+                </select>
             </div>
 
             <div class="mb-3">
                 <label for="couleur" class="form-label">Couleur:</label>
-                <input type="text" class="form-control" id="couleur" name="couleur" required>
+                <select class="form-select" id="couleur" name="couleur" required>
+                    <option value="" disabled selected>Select Couleur</option>
+                    <option value="Bleu">Bleu</option>
+                    <option value="Rouge">Rouge</option>
+                    <option value="Noir">Noir</option>
+                    <option value="Blanc">Blanc</option>
+                    <option value="Gris">Gris</option>
+                    <option value="Vert">Vert</option>
+                    <option value="Jaune">Jaune</option>
+                </select>
             </div>
 
             <div class="mb-3">
@@ -95,7 +120,13 @@
 
             <div class="mb-3">
                 <label for="typeCombustible" class="form-label">Type Combustible:</label>
-                <input type="text" class="form-control" id="typeCombustible" name="typeCombustible" required>
+                <select class="form-select" id="typeCombustible" name="typeCombustible" required>
+                    <option value="" disabled selected>Select Type Combustible</option>
+                    <option value="Essence">Essence</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Hybride">Hybride</option>
+                    <option value="Electrique">Electrique</option>
+                </select>
             </div>
 
             <div class="mb-3">
@@ -105,7 +136,11 @@
 
             <div class="mb-3">
                 <label for="typeBoiteVitesse" class="form-label">Type Boite Vitesse:</label>
-                <input type="text" class="form-control" id="typeBoiteVitesse" name="typeBoiteVitesse" required>
+                <select class="form-select" id="typeBoiteVitesse" name="typeBoiteVitesse" required>
+                    <option value="" disabled selected>Select Type Boite Vitesse</option>
+                    <option value="Manuelle">Manuelle</option>
+                    <option value="Automatique">Automatique</option>
+                </select>
             </div>
 
             <div class="mb-3">
@@ -113,14 +148,32 @@
                 <input type="number" step="0.01" class="form-control" id="consommation" name="consommation" required>
             </div>
 
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="neuf" name="neuf">
-                <label class="form-check-label" for="neuf">Neuf</label>
+            <div class="mb-3">
+                <label class="form-label">Neuf:</label>
+                <div class="radio-group">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="neufOui" name="neuf" value="true" required>
+                        <label class="form-check-label" for="neufOui">Oui</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="neufNon" name="neuf" value="false" required>
+                        <label class="form-check-label" for="neufNon">Non</label>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="garantie" name="garantie">
-                <label class="form-check-label" for="garantie">Garantie</label>
+            <div class="mb-3">
+                <label class="form-label">Garantie:</label>
+                <div class="radio-group">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="garantieOui" name="garantie" value="true" required>
+                        <label class="form-check-label" for="garantieOui">Oui</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="garantieNon" name="garantie" value="false" required>
+                        <label class="form-check-label" for="garantieNon">Non</label>
+                    </div>
+                </div>
             </div>
 
             <div class="mb-3">
@@ -128,9 +181,18 @@
                 <input type="date" class="form-control" id="dateFinGarantie" name="dateFinGarantie">
             </div>
 
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="enVente" name="enVente">
-                <label class="form-check-label" for="enVente">En Vente</label>
+            <div class="mb-3">
+                <label class="form-label">En Vente:</label>
+                <div class="radio-group">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="enVenteOui" name="enVente" value="true" required>
+                        <label class="form-check-label" for="enVenteOui">Oui</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="enVenteNon" name="enVente" value="false" required>
+                        <label class="form-check-label" for="enVenteNon">Non</label>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-custom">Create Voiture</button>
@@ -149,7 +211,12 @@
         const formData = new FormData(this);
         const data = {};
         formData.forEach((value, key) => {
-            data[key] = value;
+            // Convert string "true"/"false" to boolean for checkbox fields
+            if (key === 'neuf' || key === 'garantie' || key === 'enVente') {
+                data[key] = value === 'true';
+            } else {
+                data[key] = value;
+            }
         });
 
         // Make the AJAX request
@@ -163,6 +230,7 @@
             .then(response => {
                 if (response.ok) {
                     alert('Voiture created successfully!');
+                    this.reset();  // Reset form after successful creation
                 } else {
                     alert('Error creating voiture');
                 }
@@ -171,6 +239,18 @@
                 console.error('Error:', error);
                 alert('An error occurred');
             });
+    });
+
+    // Show/hide date fin garantie based on garantie selection
+    document.querySelectorAll('input[name="garantie"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const dateFinGarantieField = document.getElementById('dateFinGarantie');
+            dateFinGarantieField.required = this.value === 'true';
+            dateFinGarantieField.disabled = this.value === 'false';
+            if (this.value === 'false') {
+                dateFinGarantieField.value = '';
+            }
+        });
     });
 </script>
 

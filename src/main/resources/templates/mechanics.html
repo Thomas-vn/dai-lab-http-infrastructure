@@ -2,12 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Liste des Mécaniciens</title>
+    <title>Gestion des Mécaniciens</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5">
-        <h1>Liste des Mécaniciens</h1>
+        <h1 class="mb-4">Gestion des Mécaniciens</h1>
+
+        <!-- Button to trigger new mechanic modal -->
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addMechanicModal">
+            <i class="fas fa-plus"></i> Nouveau Mécanicien
+        </button>
+
+        <!-- Alert for feedback messages -->
+        <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+        <!-- Mechanics Table -->
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
@@ -22,6 +33,7 @@
                         <th>Poste</th>
                         <th>Début contrat</th>
                         <th>Fin contrat</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="mechanicsTableBody">
@@ -30,7 +42,187 @@
         </div>
     </div>
 
+    <!-- Add Mechanic Modal -->
+    <div class="modal fade" id="addMechanicModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau Mécanicien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMechanicForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="noAVS" class="form-label">No AVS</label>
+                                <input type="number" class="form-control" id="noAVS" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sexe" class="form-label">Sexe</label>
+                                <select class="form-control" id="sexe" required>
+                                    <option value="M">Homme</option>
+                                    <option value="F">Femme</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="nom" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="prenom" class="form-label">Prénom</label>
+                                <input type="text" class="form-control" id="prenom" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dateNaissance" class="form-label">Date de naissance</label>
+                                <input type="date" class="form-control" id="dateNaissance" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salaire" class="form-label">Salaire (CHF)</label>
+                                <input type="number" class="form-control" id="salaire" required step="0.01">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dateDebutContrat" class="form-label">Début contrat</label>
+                                <input type="date" class="form-control" id="dateDebutContrat" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="dateFinContrat" class="form-label">Fin contrat</label>
+                                <input type="date" class="form-control" id="dateFinContrat">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="poste" class="form-label">Poste</label>
+                            <input type="text" class="form-control" id="poste" required>
+                        </div>
+                        <fieldset class="mb-3">
+                            <legend class="form-label">Adresse</legend>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="rue" class="form-label">Rue</label>
+                                    <input type="text" class="form-control" id="rue" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="numero" class="form-label">Numéro</label>
+                                    <input type="text" class="form-control" id="numero" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="npa" class="form-label">NPA</label>
+                                    <input type="number" class="form-control" id="npa" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ville" class="form-label">Ville</label>
+                                    <input type="text" class="form-control" id="ville" required>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="createMechanic()">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Mechanic Modal -->
+    <div class="modal fade" id="editMechanicModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier Mécanicien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMechanicForm">
+                        <input type="hidden" id="editMechanicNoAVS">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editSexe" class="form-label">Sexe</label>
+                                <select class="form-control" id="editSexe" required>
+                                    <option value="M">Homme</option>
+                                    <option value="F">Femme</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editSalaire" class="form-label">Salaire (CHF)</label>
+                                <input type="number" class="form-control" id="editSalaire" required step="0.01">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editNom" class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="editNom" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPrenom" class="form-label">Prénom</label>
+                                <input type="text" class="form-control" id="editPrenom" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editDateNaissance" class="form-label">Date de naissance</label>
+                                <input type="date" class="form-control" id="editDateNaissance" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPoste" class="form-label">Poste</label>
+                                <input type="text" class="form-control" id="editPoste" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editDateDebutContrat" class="form-label">Début contrat</label>
+                                <input type="date" class="form-control" id="editDateDebutContrat" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editDateFinContrat" class="form-label">Fin contrat</label>
+                                <input type="date" class="form-control" id="editDateFinContrat">
+                            </div>
+                        </div>
+                        <fieldset class="mb-3">
+                            <legend class="form-label">Adresse</legend>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="editRue" class="form-label">Rue</label>
+                                    <input type="text" class="form-control" id="editRue" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="editNumero" class="form-label">Numéro</label>
+                                    <input type="text" class="form-control" id="editNumero" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="editNpa" class="form-label">NPA</label>
+                                    <input type="number" class="form-control" id="editNpa" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="editVille" class="form-label">Ville</label>
+                                    <input type="text" class="form-control" id="editVille" required>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="updateMechanic()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let currentMechanics = [];
+
         function formatDate(dateString) {
             if (!dateString) return '-';
             const date = new Date(dateString);
@@ -50,11 +242,21 @@
             return `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.classList.remove('d-none');
+            setTimeout(() => alert.classList.add('d-none'), 3000);
+        }
+
+        function loadMechanics() {
             fetch('/api/mechanics')
                 .then(response => response.json())
                 .then(mechanics => {
+                    currentMechanics = mechanics;
                     const tbody = document.getElementById('mechanicsTableBody');
+                    tbody.innerHTML = '';
                     mechanics.forEach(mechanic => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -68,23 +270,143 @@
                             <td>${mechanic.poste || '-'}</td>
                             <td>${formatDate(mechanic.dateDebutContrat)}</td>
                             <td>${formatDate(mechanic.dateFinContrat)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="openEditModal(${mechanic.noAVS})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger me-1" onclick="deleteMechanic(${mechanic.noAVS})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
                         `;
                         tbody.appendChild(row);
                     });
                 })
                 .catch(error => {
                     console.error('Erreur:', error);
-                    document.getElementById('mechanicsTableBody').innerHTML = `
-                        <tr>
-                            <td colspan="10" class="text-center text-danger">
-                                <div class="alert alert-danger" role="alert">
-                                    Erreur lors du chargement des données
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                    showAlert('Erreur lors du chargement des données', 'danger');
                 });
-        });
+        }
+
+        function createMechanic() {
+            const mechanic = {
+                noAVS: document.getElementById('noAVS').value,
+                nom: document.getElementById('nom').value,
+                prenom: document.getElementById('prenom').value,
+                dateNaissance: document.getElementById('dateNaissance').value,
+                sexe: document.getElementById('sexe').value,
+                salaire: parseFloat(document.getElementById('salaire').value),
+                poste: document.getElementById('poste').value,
+                dateDebutContrat: document.getElementById('dateDebutContrat').value,
+                dateFinContrat: document.getElementById('dateFinContrat').value || null,
+                lieu: {
+                    rue: document.getElementById('rue').value,
+                    numero: document.getElementById('numero').value,
+                    npa: parseInt(document.getElementById('npa').value),
+                    ville: document.getElementById('ville').value
+                }
+            };
+
+            fetch('/api/mechanics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mechanic)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la création');
+                return response.json();
+            })
+            .then(() => {
+                showAlert('Mécanicien créé avec succès', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('addMechanicModal')).hide();
+                document.getElementById('addMechanicForm').reset();
+                loadMechanics();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors de la création du mécanicien', 'danger');
+            });
+        }
+
+        function openEditModal(noAVS) {
+            const mechanic = currentMechanics.find(m => m.noAVS === noAVS);
+            if (mechanic) {
+                document.getElementById('editMechanicNoAVS').value = mechanic.noAVS;
+                document.getElementById('editNom').value = mechanic.nom;
+                document.getElementById('editPrenom').value = mechanic.prenom;
+                document.getElementById('editDateNaissance').value = mechanic.dateNaissance?.split('T')[0];
+                document.getElementById('editSexe').value = mechanic.sexe;
+                document.getElementById('editSalaire').value = mechanic.salaire;
+                document.getElementById('editPoste').value = mechanic.poste;
+                document.getElementById('editDateDebutContrat').value = mechanic.dateDebutContrat?.split('T')[0];
+                document.getElementById('editDateFinContrat').value = mechanic.dateFinContrat?.split('T')[0] || '';
+                
+                if (mechanic.lieu) {
+                    document.getElementById('editRue').value = mechanic.lieu.rue;
+                    document.getElementById('editNumero').value = mechanic.lieu.numero;
+                    document.getElementById('editNpa').value = mechanic.lieu.npa;
+                    document.getElementById('editVille').value = mechanic.lieu.ville;
+                }
+
+                new bootstrap.Modal(document.getElementById('editMechanicModal')).show();
+            }
+        }
+
+        function updateMechanic() {
+            const noAVS = document.getElementById('editMechanicNoAVS').value; 
+            const mechanicData = {
+                nom: document.getElementById('editNom').value,
+                prenom: document.getElementById('editPrenom').value,
+                salaire: parseFloat(document.getElementById('editSalaire').value),
+                poste: document.getElementById('editPoste').value,
+                dateNaissance: document.getElementById('editDateNaissance').value,
+                sexe: document.getElementById('editSexe').value,
+                dateDebutContrat: document.getElementById('editDateDebutContrat').value,
+                dateFinContrat: document.getElementById('editDateFinContrat').value || null,
+                lieu: {
+                    rue: document.getElementById('editRue').value,
+                    numero: document.getElementById('editNumero').value,
+                    npa: parseInt(document.getElementById('editNpa').value),
+                    ville: document.getElementById('editVille').value
+                }
+            };
+
+            fetch(`/api/mechanics/${noAVS}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mechanicData),
+            })
+            .then(response => {
+                if (response.ok) {
+                    showAlert('Mécanicien mis à jour avec succès!');
+                    loadMechanics(); 
+                } else {
+                    showAlert('Erreur lors de la mise à jour du mécanicien.');
+                }
+            });
+        }
+
+        function deleteMechanic(noAVS) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce mécanicien ?')) {
+                fetch(`/api/mechanics/${noAVS}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        showAlert('Mécanicien supprimé avec succès!');
+                        loadMechanics();
+                    } else {
+                        showAlert('Erreur lors de la suppression du mécanicien.');
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadMechanics);
     </script>
 </body>
 </html>
