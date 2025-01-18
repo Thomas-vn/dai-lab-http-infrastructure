@@ -40,4 +40,12 @@ public class PageController {
         return "addCar";
     }
 
+    /**
+     * Mechanics List Page
+     * GET /api/mechanics
+     */
+    @GetMapping("/mechanics")
+    public String mechanicsPage() {
+        return "mechanics";
+    }
 }

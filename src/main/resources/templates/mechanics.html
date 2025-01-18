@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Mécaniciens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Liste des Mécaniciens</h1>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No AVS</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Date de naissance</th>
+                        <th>Sexe</th>
+                        <th>Adresse</th>
+                        <th>Salaire</th>
+                        <th>Poste</th>
+                        <th>Début contrat</th>
+                        <th>Fin contrat</th>
+                    </tr>
+                </thead>
+                <tbody id="mechanicsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-CH');
+        }
+
+        function formatMoney(amount) {
+            if (!amount) return '-';
+            return new Intl.NumberFormat('fr-CH', {
+                style: 'currency',
+                currency: 'CHF'
+            }).format(amount);
+        }
+
+        function formatAddress(lieu) {
+            if (!lieu) return '-';
+            return `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/mechanics')
+                .then(response => response.json())
+                .then(mechanics => {
+                    const tbody = document.getElementById('mechanicsTableBody');
+                    mechanics.forEach(mechanic => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${mechanic.noAVS || '-'}</td>
+                            <td>${mechanic.nom || '-'}</td>
+                            <td>${mechanic.prenom || '-'}</td>
+                            <td>${formatDate(mechanic.dateNaissance)}</td>
+                            <td>${mechanic.sexe || '-'}</td>
+                            <td>${formatAddress(mechanic.lieu)}</td>
+                            <td>${formatMoney(mechanic.salaire)}</td>
+                            <td>${mechanic.poste || '-'}</td>
+                            <td>${formatDate(mechanic.dateDebutContrat)}</td>
+                            <td>${formatDate(mechanic.dateFinContrat)}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    document.getElementById('mechanicsTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="10" class="text-center text-danger">
+                                <div class="alert alert-danger" role="alert">
+                                    Erreur lors du chargement des données
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+        });
+    </script>
+</body>
+</html>
