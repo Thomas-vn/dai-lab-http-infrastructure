@@ -1,0 +1,27 @@
+services:
+  bdr-postgresql:
+    image: bitnami/postgresql:17
+    container_name: bdr_postgres
+    environment:
+      POSTGRESQL_USERNAME: bdr
+      POSTGRESQL_PASSWORD: bdr
+      POSTGRESQL_DATABASE: bdr
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./schema_sql/:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "bdr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - garage-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  garage-network:
+    driver: bridge

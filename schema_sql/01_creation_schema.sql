@@ -1,5 +1,3 @@
-drop schema garage cascade; -- aide au travail
-
 commit; -- pour s'assurer que les changements sont bien pris en compte
 
 set search_path = garage;
