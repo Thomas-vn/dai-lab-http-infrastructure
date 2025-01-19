@@ -1,14 +1,18 @@
 package com.yourcompany.garage.garageapi.service;
 
+import com.yourcompany.garage.garageapi.dto.ReparationDTO;
+import com.yourcompany.garage.garageapi.dto.ReparationDTOSecond;
 import com.yourcompany.garage.garageapi.entity.Reparation;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import com.yourcompany.garage.garageapi.repository.ReparationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReparationServiceImpl implements ReparationService {
@@ -23,97 +27,114 @@ public class ReparationServiceImpl implements ReparationService {
     // CRUD Operations
 
     @Override
-    public List<Reparation> getAllReparations() {
-        return reparationRepository.findAll();
+    public List<ReparationDTO> getAllReparations() {
+        List<Object[]> rawResults = reparationRepository.findAllCustom();
+        return rawResults.stream()
+                .map(row -> new ReparationDTO(
+                        (Integer) row[0],                           // reparationid
+                        (BigDecimal) row[1],                        // prix
+                        convertToLocalDate(row[2]),                 // datedebut
+                        row[3] != null ? convertToLocalDate(row[3]) : null, // datefin
+                        (String) row[4],                            // numerochassis
+                        (String) row[5]                             // ville
+                ))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public ReparationDTO getReparationById(Integer reparationID) {
+        List<Object[]> results = reparationRepository.findByIdCustom(reparationID);
+
+        if (results == null || results.isEmpty()) {
+            throw new ResourceNotFoundException("Reparation not found with id: " + reparationID);
+        }
+
+        // Get the first row from the results
+        Object[] row = results.get(0);
+
+        // Map the row to ReparationDTO
+        return mapRowToReparationDTO(row);
     }
 
     @Override
-    public Optional<Reparation> getReparationById(Integer reparationID) {
-        return reparationRepository.findById(reparationID);
+    public List<ReparationDTO> getReparationByNumeroChassis(String numeroChassis) {
+        List<Object[]> rawResults = reparationRepository.findByNumeroChassisCustom(numeroChassis);
+        return rawResults.stream()
+                .map(row -> new ReparationDTO(
+                        (Integer) row[0],                           // reparationid
+                        (BigDecimal) row[1],                        // prix
+                        convertToLocalDate(row[2]),                 // datedebut
+                        row[3] != null ? convertToLocalDate(row[3]) : null, // datefin
+                        (String) row[4],                            // numerochassis
+                        (String) row[5]                             // ville
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Reparation createReparation(Reparation reparation) {
-        return reparationRepository.save(reparation);
+    public List<ReparationDTO> getReparationByMechanicien(Integer mechanicienID){
+        List<Object[]> rawResults = reparationRepository.findByMechanicienCustom(mechanicienID);
+        return rawResults.stream()
+                .map(row -> new ReparationDTO(
+                        (Integer) row[0],                           // reparationid
+                        (BigDecimal) row[1],                        // prix
+                        convertToLocalDate(row[2]),                 // datedebut
+                        row[3] != null ? convertToLocalDate(row[3]) : null, // datefin
+                        (String) row[4],                            // numerochassis
+                        (String) row[5]                             // ville
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Reparation updateReparation(Integer reparationID, Reparation reparationDetails) {
-        Reparation reparation = reparationRepository.findById(reparationID)
-                .orElseThrow(() -> new ResourceNotFoundException("Reparation not found for this id :: " + reparationID));
-
-        reparation.setPrix(reparationDetails.getPrix());
-        reparation.setDateDebut(reparationDetails.getDateDebut());
-        reparation.setDateFin(reparationDetails.getDateFin());
-        reparation.setNumeroChassis(reparationDetails.getNumeroChassis());
-        reparation.setLieu(reparationDetails.getLieu());
-        reparation.setServices(reparationDetails.getServices());
-
-        return reparationRepository.save(reparation);
+    public Reparation createReparation(ReparationDTOSecond reparation) {
+        return reparationRepository.saveCustom(
+                reparation.getReparationID(),
+                reparation.getPrix(),
+                reparation.getDateDebut(),
+                reparation.getDateFin(),
+                reparation.getNumeroChassis(),
+                reparation.getVille());
     }
+
 
     @Override
     public void deleteReparation(Integer reparationID) {
-        Reparation reparation = reparationRepository.findById(reparationID)
-                .orElseThrow(() -> new ResourceNotFoundException("Reparation not found for this id :: " + reparationID));
+        // Fetch the reparation details from the repository
+        List<Object[]> results = reparationRepository.findByIdCustom(reparationID);
 
-        reparationRepository.delete(reparation);
+        // Check if the results are empty
+        if (results == null || results.isEmpty()) {
+            throw new ResourceNotFoundException("Reparation not found with id: " + reparationID);
+        }
+
+        // Assuming we are interested in the first result, similar to the getReparationById method
+        Object[] row = results.get(0); // Get the first row from the result
+
+        // Delete the reparation by its ID
+        reparationRepository.deleteCustom(reparationID);
     }
 
-    // Custom Query Operations
+    // Private helper methods
 
-    @Override
-    public List<Reparation> findByNumeroChassis(String numeroChassis) {
-        return reparationRepository.findByNumeroChassis(numeroChassis);
+    /**
+     * Converts a database row to a ReparationDTO object.
+     */
+    private ReparationDTO mapRowToReparationDTO(Object[] row) {
+        return new ReparationDTO(
+                (Integer) row[0],                               // reparationid
+                (BigDecimal) row[1],                            // prix
+                convertToLocalDate(row[2]),                     // datedebut
+                row[3] != null ? convertToLocalDate(row[3]) : null, // datefin
+                (String) row[4],                                // numerochassis
+                (String) row[5]                                 // ville
+        );
     }
 
-    @Override
-    public List<Reparation> findByLieuVille(String ville) {
-        return reparationRepository.findByLieuVille(ville);
+    private LocalDate convertToLocalDate(Object sqlDate) {
+        if (sqlDate instanceof java.sql.Date) {
+            return ((java.sql.Date) sqlDate).toLocalDate();
+        }
+        return null; // Handle null values gracefully
     }
 
-    @Override
-    public List<Reparation> findByPrixBetween(Double minPrice, Double maxPrice) {
-        return reparationRepository.findByPrixBetween(minPrice, maxPrice);
-    }
-
-    @Override
-    public List<Reparation> findByDateDebutAfter(LocalDate dateDebut) {
-        return reparationRepository.findByDateDebutAfter(dateDebut.toString()); // Adjust repository method if necessary
-    }
-
-    @Override
-    public List<Reparation> findByDateFinBefore(LocalDate dateFin) {
-        return reparationRepository.findByDateFinBefore(dateFin.toString()); // Adjust repository method if necessary
-    }
-
-    @Override
-    public List<Reparation> findByDateFinIsNull() {
-        return reparationRepository.findByDateFinIsNull();
-    }
-
-    @Override
-    public Optional<Reparation> findByReparationID(Integer reparationID) {
-        return reparationRepository.findByReparationID(reparationID);
-    }
-
-    @Override
-    public List<Reparation> findByPrixGreaterThan(Double prix) {
-        return reparationRepository.findByPrixGreaterThan(prix);
-    }
-
-    @Override
-    public List<Reparation> findAllOrderByPrixDesc() {
-        return reparationRepository.findAllOrderByPrixDesc();
-    }
-
-    @Override
-    public List<Reparation> findCompletedReparationsByNumeroChassis(String numeroChassis) {
-        return reparationRepository.findCompletedReparationsByNumeroChassis(numeroChassis);
-    }
-
-    @Override
-    public List<Reparation> findByDateDebutBetween(LocalDate startDate, LocalDate endDate) {
-        return reparationRepository.findByDateDebutBetween(startDate.toString(), endDate.toString()); // Adjust repository method if necessary
-    }
 }

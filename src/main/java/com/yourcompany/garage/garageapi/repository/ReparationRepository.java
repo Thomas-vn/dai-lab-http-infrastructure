@@ -1,63 +1,77 @@
 package com.yourcompany.garage.garageapi.repository;
 
+import com.yourcompany.garage.garageapi.dto.ReparationDTO;
 import com.yourcompany.garage.garageapi.entity.Reparation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReparationRepository extends JpaRepository<Reparation, Integer> {
+public interface ReparationRepository extends JpaRepository<Reparation, Integer>{
 
     // Find all reparations
-    @Query("SELECT r FROM Reparation r")
-    List<Reparation> findAll();
+    @Query(value = "select r.reparationid,\n" +
+            "       r.prix,\n" +
+            "       r.datedebut,\n" +
+            "       r.datefin,\n" +
+            "       v.numerochassis,\n" +
+            "       l.ville\n" +
+            "        from reparation r\n" +
+            "        join Voiture v using(numerochassis)\n" +
+            "        join lieu l on r.lieuid = l.id", nativeQuery = true)
+    List<Object[]> findAllCustom();
 
-    // Find all reparations by the car chassis number (NumeroChassis)
-    @Query("SELECT r FROM Reparation r WHERE r.numeroChassis = :numeroChassis")
-    List<Reparation> findByNumeroChassis(String numeroChassis);
-
-    // Find all reparations by the city of the repair location
-    @Query("SELECT r FROM Reparation r JOIN r.lieu l WHERE l.ville = :ville")
-    List<Reparation> findByLieuVille(@Param("ville") String ville);
-
-    // Find all reparations within a specific price range
-    @Query("SELECT r FROM Reparation r WHERE r.prix BETWEEN :minPrice AND :maxPrice")
-    List<Reparation> findByPrixBetween(@Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice);
-
-    // Find all reparations that started after a specific date
-    @Query("SELECT r FROM Reparation r WHERE r.dateDebut > :dateDebut")
-    List<Reparation> findByDateDebutAfter(@Param("dateDebut") String dateDebut);
-
-    // Find all reparations that ended before a specific date
-    @Query("SELECT r FROM Reparation r WHERE r.dateFin < :dateFin")
-    List<Reparation> findByDateFinBefore(@Param("dateFin") String dateFin);
-
-    // Find all reparations with no end date (i.e., DateFin is null)
-    @Query("SELECT r FROM Reparation r WHERE r.dateFin IS NULL")
-    List<Reparation> findByDateFinIsNull();
-
-    // Find a single reparation by its ID
-    @Query("SELECT r FROM Reparation r WHERE r.reparationID = :reparationID")
-    Optional<Reparation> findByReparationID(Integer reparationID);
+    // Find reparation by ID
+    @Query(value = "SELECT r.reparationid, r.prix, r.datedebut, r.datefin, v.numerochassis, l.ville " +
+            "FROM reparation r " +
+            "JOIN Voiture v USING(numerochassis) " +
+            "JOIN lieu l ON r.lieuid = l.id " +
+            "WHERE r.reparationid = :reparationID", nativeQuery = true)
+    List<Object[]> findByIdCustom(@Param("reparationID") Integer reparationID);
 
 
-    // Find all reparations with a price greater than a given value
-    @Query("SELECT r FROM Reparation r WHERE r.prix > :prix")
-    List<Reparation> findByPrixGreaterThan(@Param("prix") Double prix);
+    @Query(value = "select r.reparationid,\n" +
+            "       r.prix,\n" +
+            "       r.datedebut,\n" +
+            "       r.datefin,\n" +
+            "       v.numerochassis,\n" +
+            "       l.ville\n" +
+            "        from reparation r\n" +
+            "        join Voiture v using(numerochassis)\n" +
+            "        join lieu l on r.lieuid = l.id\n" +
+            "        where v.numerochassis = :numeroChassis", nativeQuery = true)
+    List<Object[]> findByNumeroChassisCustom(String numeroChassis);
 
-    // Find all reparations sorted by price in descending order
-    @Query("SELECT r FROM Reparation r ORDER BY r.prix DESC")
-    List<Reparation> findAllOrderByPrixDesc();
+    @Query(value = "select r.reparationid,\n" +
+            "       r.prix,\n" +
+            "       r.datedebut,\n" +
+            "       r.datefin,\n" +
+            "       v.numerochassis,\n" +
+            "       l.ville\n" +
+            "        from reparation r\n" +
+            "        join Voiture v using(numerochassis)\n" +
+            "        join lieu l on r.lieuid = l.id\n" +
+            "        where r.mechanicienid = :mechanicienID", nativeQuery = true)
+    List<Object[]> findByMechanicienCustom(Integer mechanicienID);
 
-    // Find all reparations for a specific car that were finished (DateFin is not null)
-    @Query("SELECT r FROM Reparation r WHERE r.numeroChassis = :numeroChassis AND r.dateFin IS NOT NULL")
-    List<Reparation> findCompletedReparationsByNumeroChassis(@Param("numeroChassis") String numeroChassis);
 
-    // Find all reparations by their start and end dates range
-    @Query("SELECT r FROM Reparation r WHERE r.dateDebut BETWEEN :startDate AND :endDate")
-    List<Reparation> findByDateDebutBetween(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Query(value = "INSERT INTO reparation " +
+            "VALUES (:reparationID, :prix, :dateDebut, :dateFin, :numeroChassis, :lieu)",
+            nativeQuery = true)
+    Reparation saveCustom(Integer reparationID,
+                    BigDecimal prix,
+                    LocalDate dateDebut,
+                    LocalDate dateFin,
+                    String numeroChassis,
+                    Integer lieu);
+
+    @Query(value = "DELETE FROM reparation WHERE reparationid = :reparationID", nativeQuery = true)
+    void deleteCustom(Integer reparationID);
+
 }
