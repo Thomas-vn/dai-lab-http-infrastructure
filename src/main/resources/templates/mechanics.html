@@ -99,29 +99,12 @@
                             <label for="poste" class="form-label">Poste</label>
                             <input type="text" class="form-control" id="poste" required>
                         </div>
-                        <fieldset class="mb-3">
-                            <legend class="form-label">Adresse</legend>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="rue" class="form-label">Rue</label>
-                                    <input type="text" class="form-control" id="rue" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="numero" class="form-label">Numéro</label>
-                                    <input type="text" class="form-control" id="numero" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="npa" class="form-label">NPA</label>
-                                    <input type="number" class="form-control" id="npa" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="ville" class="form-label">Ville</label>
-                                    <input type="text" class="form-control" id="ville" required>
-                                </div>
-                            </div>
-                        </fieldset>
+                        <div class="mb-3">
+                            <label for="lieuId" class="form-label">Adresse</label>
+                            <select class="form-select" id="lieuId" required>
+                                <option value="">Sélectionnez une adresse</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -134,86 +117,61 @@
 
     <!-- Edit Mechanic Modal -->
     <div class="modal fade" id="editMechanicModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modifier Mécanicien</h5>
+                    <h5 class="modal-title">Modifier un mécanicien</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editMechanicForm">
-                        <input type="hidden" id="editMechanicNoAVS">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editSexe" class="form-label">Sexe</label>
-                                <select class="form-control" id="editSexe" required>
-                                    <option value="M">Homme</option>
-                                    <option value="F">Femme</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editSalaire" class="form-label">Salaire (CHF)</label>
-                                <input type="number" class="form-control" id="editSalaire" required step="0.01">
-                            </div>
+                        <input type="hidden" id="editNoAVS">
+                        <div class="mb-3">
+                            <label for="editNom" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="editNom" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editNom" class="form-label">Nom</label>
-                                <input type="text" class="form-control" id="editNom" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editPrenom" class="form-label">Prénom</label>
-                                <input type="text" class="form-control" id="editPrenom" required>
-                            </div>
+                        <div class="mb-3">
+                            <label for="editPrenom" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="editPrenom" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editDateNaissance" class="form-label">Date de naissance</label>
-                                <input type="date" class="form-control" id="editDateNaissance" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editPoste" class="form-label">Poste</label>
-                                <input type="text" class="form-control" id="editPoste" required>
-                            </div>
+                        <div class="mb-3">
+                            <label for="editDateNaissance" class="form-label">Date de naissance</label>
+                            <input type="date" class="form-control" id="editDateNaissance" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editDateDebutContrat" class="form-label">Début contrat</label>
-                                <input type="date" class="form-control" id="editDateDebutContrat" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editDateFinContrat" class="form-label">Fin contrat</label>
-                                <input type="date" class="form-control" id="editDateFinContrat">
-                            </div>
+                        <div class="mb-3">
+                            <label for="editSexe" class="form-label">Sexe</label>
+                            <select class="form-select" id="editSexe" required>
+                                <option value="M">Masculin</option>
+                                <option value="F">Féminin</option>
+                            </select>
                         </div>
-                        <fieldset class="mb-3">
-                            <legend class="form-label">Adresse</legend>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="editRue" class="form-label">Rue</label>
-                                    <input type="text" class="form-control" id="editRue" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="editNumero" class="form-label">Numéro</label>
-                                    <input type="text" class="form-control" id="editNumero" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="editNpa" class="form-label">NPA</label>
-                                    <input type="number" class="form-control" id="editNpa" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="editVille" class="form-label">Ville</label>
-                                    <input type="text" class="form-control" id="editVille" required>
-                                </div>
-                            </div>
-                        </fieldset>
+                        <div class="mb-3">
+                            <label for="editSalaire" class="form-label">Salaire</label>
+                            <input type="number" step="0.01" class="form-control" id="editSalaire" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPoste" class="form-label">Poste</label>
+                            <input type="text" class="form-control" id="editPoste" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLieuId" class="form-label">Adresse</label>
+                            <select class="form-select" id="editLieuId" required>
+                                <option value="">Sélectionnez une adresse</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDateDebutContrat" class="form-label">Date de début de contrat</label>
+                            <input type="date" class="form-control" id="editDateDebutContrat" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDateFinContrat" class="form-label">Date de fin de contrat</label>
+                            <input type="date" class="form-control" id="editDateFinContrat">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="updateMechanic()">Enregistrer</button>
+                    <button type="button" class="btn btn-primary" onclick="updateMechanic()">Modifier</button>
                 </div>
             </div>
         </div>
@@ -222,6 +180,36 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentMechanics = [];
+        let allLieux = [];
+
+        // Fonction pour charger les lieux
+        function loadLieux() {
+            fetch('/api/lieu')
+                .then(response => response.json())
+                .then(data => {
+                    allLieux = data;
+                    const lieuSelect = document.getElementById('lieuId');
+                    lieuSelect.innerHTML = '<option value="">Sélectionnez une adresse</option>';
+                    data.forEach(lieu => {
+                        const option = document.createElement('option');
+                        option.value = lieu.id;
+                        option.textContent = `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+                        lieuSelect.appendChild(option);
+                    });
+                    const editLieuSelect = document.getElementById('editLieuId');
+                    editLieuSelect.innerHTML = '<option value="">Sélectionnez une adresse</option>';
+                    data.forEach(lieu => {
+                        const option = document.createElement('option');
+                        option.value = lieu.id;
+                        option.textContent = `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+                        editLieuSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des lieux:', error);
+                    showAlert('Erreur lors du chargement des adresses', 'danger');
+                });
+        }
 
         function formatDate(dateString) {
             if (!dateString) return '-';
@@ -271,7 +259,7 @@
                             <td>${formatDate(mechanic.dateDebutContrat)}</td>
                             <td>${formatDate(mechanic.dateFinContrat)}</td>
                             <td>
-                                <button class="btn btn-sm btn-warning me-1" onclick="openEditModal(${mechanic.noAVS})">
+                                <button class="btn btn-sm btn-warning me-1" onclick="showEditModal(${mechanic.noAVS})">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-danger me-1" onclick="deleteMechanic(${mechanic.noAVS})">
@@ -289,22 +277,53 @@
         }
 
         function createMechanic() {
+            // Validation des champs obligatoires
+            const requiredFields = ['noAVS', 'nom', 'prenom', 'dateNaissance', 'sexe', 'salaire', 'poste', 'dateDebutContrat', 'lieuId'];
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    showAlert(`Le champ ${field} est obligatoire`, 'danger');
+                    element.focus();
+                    return;
+                }
+            }
+
+            // Validation du salaire
+            const salaire = parseFloat(document.getElementById('salaire').value);
+            if (salaire <= 0) {
+                showAlert('Le salaire doit être supérieur à 0', 'danger');
+                document.getElementById('salaire').focus();
+                return;
+            }
+
+            // Validation des dates
+            const dateDebut = new Date(document.getElementById('dateDebutContrat').value);
+            const dateFin = document.getElementById('dateFinContrat').value ? new Date(document.getElementById('dateFinContrat').value) : null;
+            if (dateFin && dateDebut >= dateFin) {
+                showAlert('La date de fin doit être postérieure à la date de début', 'danger');
+                return;
+            }
+
+            // Récupération du lieu sélectionné
+            const lieuId = document.getElementById('lieuId').value;
+            const selectedLieu = allLieux.find(lieu => lieu.id == lieuId);
+            
+            if (!selectedLieu) {
+                showAlert('Veuillez sélectionner une adresse valide', 'danger');
+                return;
+            }
+
             const mechanic = {
                 noAVS: document.getElementById('noAVS').value,
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
+                nom: document.getElementById('nom').value.trim(),
+                prenom: document.getElementById('prenom').value.trim(),
                 dateNaissance: document.getElementById('dateNaissance').value,
                 sexe: document.getElementById('sexe').value,
-                salaire: parseFloat(document.getElementById('salaire').value),
-                poste: document.getElementById('poste').value,
+                salaire: salaire,
+                poste: document.getElementById('poste').value.trim(),
                 dateDebutContrat: document.getElementById('dateDebutContrat').value,
                 dateFinContrat: document.getElementById('dateFinContrat').value || null,
-                lieu: {
-                    rue: document.getElementById('rue').value,
-                    numero: document.getElementById('numero').value,
-                    npa: parseInt(document.getElementById('npa').value),
-                    ville: document.getElementById('ville').value
-                }
+                lieu: selectedLieu
             };
 
             fetch('/api/mechanics', {
@@ -315,10 +334,14 @@
                 body: JSON.stringify(mechanic)
             })
             .then(response => {
-                if (!response.ok) throw new Error('Erreur lors de la création');
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Erreur lors de la création du mécanicien');
+                    });
+                }
                 return response.json();
             })
-            .then(() => {
+            .then(data => {
                 showAlert('Mécanicien créé avec succès', 'success');
                 bootstrap.Modal.getInstance(document.getElementById('addMechanicModal')).hide();
                 document.getElementById('addMechanicForm').reset();
@@ -326,51 +349,84 @@
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                showAlert('Erreur lors de la création du mécanicien', 'danger');
+                showAlert(error.message || 'Erreur lors de la création du mécanicien', 'danger');
             });
         }
 
-        function openEditModal(noAVS) {
+        function showEditModal(noAVS) {
             const mechanic = currentMechanics.find(m => m.noAVS === noAVS);
             if (mechanic) {
-                document.getElementById('editMechanicNoAVS').value = mechanic.noAVS;
+                document.getElementById('editNoAVS').value = mechanic.noAVS;
                 document.getElementById('editNom').value = mechanic.nom;
                 document.getElementById('editPrenom').value = mechanic.prenom;
-                document.getElementById('editDateNaissance').value = mechanic.dateNaissance?.split('T')[0];
+                document.getElementById('editDateNaissance').value = mechanic.dateNaissance;
                 document.getElementById('editSexe').value = mechanic.sexe;
                 document.getElementById('editSalaire').value = mechanic.salaire;
                 document.getElementById('editPoste').value = mechanic.poste;
-                document.getElementById('editDateDebutContrat').value = mechanic.dateDebutContrat?.split('T')[0];
-                document.getElementById('editDateFinContrat').value = mechanic.dateFinContrat?.split('T')[0] || '';
+                document.getElementById('editDateDebutContrat').value = mechanic.dateDebutContrat;
+                document.getElementById('editDateFinContrat').value = mechanic.dateFinContrat || '';
                 
-                if (mechanic.lieu) {
-                    document.getElementById('editRue').value = mechanic.lieu.rue;
-                    document.getElementById('editNumero').value = mechanic.lieu.numero;
-                    document.getElementById('editNpa').value = mechanic.lieu.npa;
-                    document.getElementById('editVille').value = mechanic.lieu.ville;
+                // Sélectionner le lieu dans la liste déroulante
+                const editLieuSelect = document.getElementById('editLieuId');
+                if (mechanic.lieu && mechanic.lieu.id) {
+                    editLieuSelect.value = mechanic.lieu.id;
                 }
 
-                new bootstrap.Modal(document.getElementById('editMechanicModal')).show();
+                const editModal = new bootstrap.Modal(document.getElementById('editMechanicModal'));
+                editModal.show();
             }
         }
 
         function updateMechanic() {
-            const noAVS = document.getElementById('editMechanicNoAVS').value; 
-            const mechanicData = {
-                nom: document.getElementById('editNom').value,
-                prenom: document.getElementById('editPrenom').value,
-                salaire: parseFloat(document.getElementById('editSalaire').value),
-                poste: document.getElementById('editPoste').value,
+            const noAVS = document.getElementById('editNoAVS').value;
+            
+            // Validation des champs obligatoires
+            const requiredFields = ['editNom', 'editPrenom', 'editDateNaissance', 'editSexe', 'editSalaire', 'editPoste', 'editDateDebutContrat', 'editLieuId'];
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    showAlert(`Le champ ${field.replace('edit', '')} est obligatoire`, 'danger');
+                    element.focus();
+                    return;
+                }
+            }
+
+            // Validation du salaire
+            const salaire = parseFloat(document.getElementById('editSalaire').value);
+            if (salaire <= 0) {
+                showAlert('Le salaire doit être supérieur à 0', 'danger');
+                document.getElementById('editSalaire').focus();
+                return;
+            }
+
+            // Validation des dates
+            const dateDebut = new Date(document.getElementById('editDateDebutContrat').value);
+            const dateFin = document.getElementById('editDateFinContrat').value ? new Date(document.getElementById('editDateFinContrat').value) : null;
+            if (dateFin && dateDebut >= dateFin) {
+                showAlert('La date de fin doit être postérieure à la date de début', 'danger');
+                return;
+            }
+
+            // Récupération du lieu sélectionné
+            const lieuId = document.getElementById('editLieuId').value;
+            const selectedLieu = allLieux.find(lieu => lieu.id == lieuId);
+            
+            if (!selectedLieu) {
+                showAlert('Veuillez sélectionner une adresse valide', 'danger');
+                return;
+            }
+
+            const mechanic = {
+                noAVS: noAVS,
+                nom: document.getElementById('editNom').value.trim(),
+                prenom: document.getElementById('editPrenom').value.trim(),
                 dateNaissance: document.getElementById('editDateNaissance').value,
                 sexe: document.getElementById('editSexe').value,
+                salaire: salaire,
+                poste: document.getElementById('editPoste').value.trim(),
                 dateDebutContrat: document.getElementById('editDateDebutContrat').value,
                 dateFinContrat: document.getElementById('editDateFinContrat').value || null,
-                lieu: {
-                    rue: document.getElementById('editRue').value,
-                    numero: document.getElementById('editNumero').value,
-                    npa: parseInt(document.getElementById('editNpa').value),
-                    ville: document.getElementById('editVille').value
-                }
+                lieu: selectedLieu
             };
 
             fetch(`/api/mechanics/${noAVS}`, {
@@ -378,15 +434,24 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(mechanicData),
+                body: JSON.stringify(mechanic)
             })
             .then(response => {
-                if (response.ok) {
-                    showAlert('Mécanicien mis à jour avec succès!');
-                    loadMechanics(); 
-                } else {
-                    showAlert('Erreur lors de la mise à jour du mécanicien.');
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Erreur lors de la modification du mécanicien');
+                    });
                 }
+                return response.json();
+            })
+            .then(data => {
+                showAlert('Mécanicien modifié avec succès', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('editMechanicModal')).hide();
+                loadMechanics();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert(error.message || 'Erreur lors de la modification du mécanicien', 'danger');
             });
         }
 
@@ -406,7 +471,11 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadMechanics);
+        // Chargement initial des lieux et des mécaniciens
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLieux();
+            loadMechanics();
+        });
     </script>
 </body>
 </html>

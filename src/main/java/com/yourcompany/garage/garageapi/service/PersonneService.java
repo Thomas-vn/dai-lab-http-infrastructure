@@ -10,7 +10,7 @@ public interface PersonneService {
     List<Personne> getAllPersonnes();
     
     Personne updatePersonne(Long noAVS, Personne personneDetails);
-
+    
+    Personne addPersonne(Personne nouvellePersonne);
 
 }
-

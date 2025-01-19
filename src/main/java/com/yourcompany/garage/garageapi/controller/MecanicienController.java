@@ -3,6 +3,8 @@ package com.yourcompany.garage.garageapi.controller;
 import com.yourcompany.garage.garageapi.entity.Mecanicien;
 import com.yourcompany.garage.garageapi.service.MecanicienService;
 import com.yourcompany.garage.garageapi.service.PersonneService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mechanics")
 public class MecanicienController {
+
+    private final Logger logger = LoggerFactory.getLogger(MecanicienController.class);
 
     private final MecanicienService mecanicienService;
     private final PersonneService personneService;
@@ -23,9 +27,16 @@ public class MecanicienController {
     }
 
     @PostMapping
-    public ResponseEntity<Mecanicien> createMechanic(@RequestBody Mecanicien mecanicien) {
-        Mecanicien createdMecanicien = mecanicienService.createMecanicien(mecanicien);
-        return ResponseEntity.ok(createdMecanicien);
+    public ResponseEntity<?> createMechanic(@RequestBody Mecanicien mecanicien) {
+        try {
+            Mecanicien createdMecanicien = mecanicienService.createMecanicien(mecanicien);
+            return ResponseEntity.ok(createdMecanicien);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Erreur lors de la création du mécanicien", e);
+            return ResponseEntity.internalServerError().body("Une erreur est survenue lors de la création du mécanicien");
+        }
     }
 
     @GetMapping

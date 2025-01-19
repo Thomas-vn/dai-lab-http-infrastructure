@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 @Transactional
@@ -34,19 +36,67 @@ public class MecanicienServiceImpl implements MecanicienService {
     }
 
     @Override
+    @Transactional
     public Mecanicien createMecanicien(Mecanicien mecanicien) {
-        if (mecanicien.getLieu() != null) {
-            lieuRepository.save(mecanicien.getLieu());
-        }
         logger.info("Tentative de création du mécanicien: {}", mecanicien);
+        
+        // Validation des données obligatoires
+        validateMecanicien(mecanicien);
+
         try {
+            // Sauvegarde du lieu d'abord s'il est nouveau
+            if (mecanicien.getLieu() != null && mecanicien.getLieu().getId() == null) {
+                mecanicien.setLieu(lieuRepository.save(mecanicien.getLieu()));
+            }
+
+            // Vérification du superviseur
+            if (mecanicien.getSupervisor() != null) {
+                if (mecanicien.getSupervisor().getNoAVS().equals(mecanicien.getNoAVS())) {
+                    throw new IllegalArgumentException("Un mécanicien ne peut pas être son propre superviseur");
+                }
+                if (!mecanicienRepository.existsById(mecanicien.getSupervisor().getNoAVS())) {
+                    throw new IllegalArgumentException("Le superviseur spécifié n'existe pas");
+                }
+            }
+
+            // Sauvegarde du mécanicien
             Mecanicien created = mecanicienRepository.save(mecanicien);
             logger.info("Mécanicien créé avec succès: {}", created);
-            logger.debug("Mécanicien créé avec les détails: {}", created);
             return created;
         } catch (Exception e) {
             logger.error("Erreur lors de la création du mécanicien: {}", e.getMessage(), e);
             throw new IllegalStateException("Erreur lors de la création du mécanicien: " + e.getMessage(), e);
+        }
+    }
+
+    private void validateMecanicien(Mecanicien mecanicien) {
+        if (mecanicien.getNoAVS() == null) {
+            throw new IllegalArgumentException("Le numéro AVS est obligatoire");
+        }
+        if (mecanicien.getNom() == null || mecanicien.getNom().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom est obligatoire");
+        }
+        if (mecanicien.getPrenom() == null || mecanicien.getPrenom().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le prénom est obligatoire");
+        }
+        if (mecanicien.getDateNaissance() == null) {
+            throw new IllegalArgumentException("La date de naissance est obligatoire");
+        }
+        if (mecanicien.getSexe() == null) {
+            throw new IllegalArgumentException("Le sexe est obligatoire");
+        }
+        if (mecanicien.getSalaire() == null || mecanicien.getSalaire().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Le salaire doit être supérieur à 0");
+        }
+        if (mecanicien.getDateDebutContrat() == null) {
+            throw new IllegalArgumentException("La date de début de contrat est obligatoire");
+        }
+        if (mecanicien.getDateFinContrat() != null && 
+            mecanicien.getDateFinContrat().isBefore(mecanicien.getDateDebutContrat())) {
+            throw new IllegalArgumentException("La date de fin de contrat doit être postérieure à la date de début");
+        }
+        if (mecanicien.getLieu() == null) {
+            throw new IllegalArgumentException("Le lieu est obligatoire");
         }
     }
 

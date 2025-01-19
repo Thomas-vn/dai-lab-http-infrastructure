@@ -39,6 +39,17 @@ public class PersonneServiceImpl implements PersonneService {
             .orElseThrow(() -> new ResourceNotFoundException("Personne non trouvée avec le NoAVS: " + noAVS));
     }
 
+    @Override
+    public Personne addPersonne(Personne personne) {
+        if (personne.getNoAVS() == null) {
+            throw new IllegalArgumentException("Le numéro AVS est obligatoire");
+        }
+        if (personneRepository.existsById(personne.getNoAVS())) {
+            throw new IllegalArgumentException("Une personne existe déjà avec ce numéro AVS");
+        }
+        return personneRepository.save(personne);
+    }
+
     public Personne createPersonne(Personne personne) {
         return personneRepository.save(personne);
     }
