@@ -210,29 +210,32 @@ public class VoitureServiceImpl implements VoitureService {
     }
 
 
+ 
     //--------INSERT--------
 
     @Override
     public void insertVoiture(Voiture voiture) {
-        voitureRepository.insertVoiture(voiture.getNumeroChassis(),
-                voiture.getMarque(),
-                voiture.getTypeCarrosserie().toString(),
-                voiture.getCouleur().toString(),
-                voiture.getDateFabrication(),
-                voiture.getNombrePlaces(),
-                voiture.getPrix(),
-                voiture.getNombrePortes(),
-                voiture.getPuissance(),
-                voiture.getDescriptionOptions(),
-                voiture.getDateExpertise(),
-                voiture.getTypeCombustible().toString(),
-                voiture.getNombreKm(),
-                voiture.getTypeBoiteVitesse().toString(),
-                voiture.getConsommation(),
-                voiture.getNeuf(),
-                voiture.getGarantie(),
-                voiture.getDateFinGarantie(),
-                voiture.getEnVente(),
-                voiture.getProprietaire().getNoAVS());
+        voitureRepository.insertVoiture(
+            voiture.getNumeroChassis(),
+            voiture.getMarque(),
+            voiture.getTypeCarrosserie().name(),  
+            voiture.getCouleur().name(),          
+            voiture.getDateFabrication(),
+            voiture.getNombrePlaces(),
+            voiture.getPrix(),
+            voiture.getNombrePortes(),
+            voiture.getPuissance(),
+            voiture.getDescriptionOptions(),
+            voiture.getDateExpertise(),
+            voiture.getTypeCombustible().name(),  
+            voiture.getNombreKm(),
+            voiture.getTypeBoiteVitesse().name(), 
+            voiture.getConsommation(),
+            voiture.getNeuf(),
+            voiture.getGarantie(),
+            voiture.getDateFinGarantie(),
+            voiture.getEnVente(),
+            voiture.getProprietaire().getNoAVS()
+        );
     }
 }

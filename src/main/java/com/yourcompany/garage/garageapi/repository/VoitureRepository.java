@@ -97,13 +97,15 @@ public interface VoitureRepository extends JpaRepository<Voiture, String> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO Voiture (NumeroChassis, Marque, TypeCarrosserie, Couleur, DateFabrication, " +
-            "NombrePlaces, Prix, NombrePortes, Puissance, DescriptionOptions, DateExpertise, " +
-            "TypeCombustible, NombreKm, TypeBoiteVitesse, Consommation, Neuf, Garantie, DateFinGarantie, " +
-            "EnVente, Proprietaire) " +
-            "VALUES (:numeroChassis, :marque, :typeCarrosserie, :couleur, :dateFabrication, " +
+    @Query(value = "INSERT INTO garage.voiture (numerochassis, marque, typecarrosserie, couleur, datefabrication, " +
+            "nombreplaces, prix, nombreportes, puissance, descriptionoptions, dateexpertise, " +
+            "typecombustible, nombrekm, typeboitevitesse, consommation, neuf, garantie, datefingarantie, " +
+            "envente, proprietaire) " +
+            "VALUES (:numeroChassis, :marque, CAST(:typeCarrosserie AS garage.typecarrosserie), " +
+            "CAST(:couleur AS garage.typecouleurs), :dateFabrication, " +
             ":nombrePlaces, :prix, :nombrePortes, :puissance, :descriptionOptions, :dateExpertise, " +
-            ":typeCombustible, :nombreKm, :typeBoiteVitesse, :consommation, :neuf, :garantie, :dateFinGarantie, " +
+            "CAST(:typeCombustible AS garage.typecombustible), :nombreKm, " +
+            "CAST(:typeBoiteVitesse AS garage.typeboitevitesse), :consommation, :neuf, :garantie, :dateFinGarantie, " +
             ":enVente, :proprietaire)",
             nativeQuery = true)
     int insertVoiture(@Param("numeroChassis") String numeroChassis,
@@ -111,20 +113,19 @@ public interface VoitureRepository extends JpaRepository<Voiture, String> {
                       @Param("typeCarrosserie") String typeCarrosserie,
                       @Param("couleur") String couleur,
                       @Param("dateFabrication") LocalDate dateFabrication,
-                      @Param("nombrePlaces") int nombrePlaces,
+                      @Param("nombrePlaces") Integer nombrePlaces,
                       @Param("prix") BigDecimal prix,
-                      @Param("nombrePortes") int nombrePortes,
-                      @Param("puissance") int puissance,
+                      @Param("nombrePortes") Integer nombrePortes,
+                      @Param("puissance") Integer puissance,
                       @Param("descriptionOptions") String descriptionOptions,
                       @Param("dateExpertise") LocalDate dateExpertise,
                       @Param("typeCombustible") String typeCombustible,
-                      @Param("nombreKm") int nombreKm,
+                      @Param("nombreKm") Integer nombreKm,
                       @Param("typeBoiteVitesse") String typeBoiteVitesse,
                       @Param("consommation") BigDecimal consommation,
-                      @Param("neuf") boolean neuf,
-                      @Param("garantie") boolean garantie,
+                      @Param("neuf") Boolean neuf,
+                      @Param("garantie") Boolean garantie,
                       @Param("dateFinGarantie") LocalDate dateFinGarantie,
-                      @Param("enVente") boolean enVente,
+                      @Param("enVente") Boolean enVente,
                       @Param("proprietaire") Long proprietaire);
 }
-

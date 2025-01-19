@@ -7,73 +7,73 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "voiture")
+@Table(name = "Voiture")
 @Data
 public class Voiture {
 
     @Id
-    @Column(name = "numerochassis", length = 17)
+    @Column(name = "NumeroChassis", length = 17)
     private String numeroChassis;
 
-    @Column(name = "marque", nullable = false, length = 50)
+    @Column(name = "Marque", nullable = false, length = 50)
     private String marque;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "typecarrosserie", nullable = false)
+    @Column(name = "TypeCarrosserie", nullable = false, columnDefinition = "garage.typecarrosserie")
     private TypeCarrosserie typeCarrosserie;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "couleur", nullable = false)
+    @Column(name = "Couleur", nullable = false, columnDefinition = "garage.typecouleurs")
     private TypeCouleurs couleur;
 
-    @Column(name = "datefabrication", nullable = false)
+    @Column(name = "DateFabrication", nullable = false)
     private LocalDate dateFabrication;
 
-    @Column(name = "nombreplaces", nullable = false)
+    @Column(name = "NombrePlaces", nullable = false)
     private Integer nombrePlaces;
 
-    @Column(name = "prix", precision = 10, scale = 2)
+    @Column(name = "Prix", nullable = false, precision = 10, scale = 2)
     private BigDecimal prix;
 
-    @Column(name = "nombreportes", nullable = false)
+    @Column(name = "NombrePortes", nullable = false)
     private Integer nombrePortes;
 
-    @Column(name = "puissance", nullable = false)
+    @Column(name = "Puissance", nullable = false)
     private Integer puissance;
 
-    @Column(name = "descriptionoptions", columnDefinition = "TEXT")
+    @Column(name = "DescriptionOptions", columnDefinition = "TEXT")
     private String descriptionOptions;
 
-    @Column(name = "dateexpertise", nullable = false)
+    @Column(name = "DateExpertise", nullable = false)
     private LocalDate dateExpertise;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "typecombustible", nullable = false)
+    @Column(name = "TypeCombustible", nullable = false, columnDefinition = "garage.typecombustible")
     private TypeCombustible typeCombustible;
 
-    @Column(name = "nombrekm", nullable = false)
+    @Column(name = "NombreKm", nullable = false)
     private Integer nombreKm;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "typeboitevitesse", nullable = false)
+    @Column(name = "TypeBoiteVitesse", nullable = false, columnDefinition = "garage.typeboitevitesse")
     private TypeBoiteVitesse typeBoiteVitesse;
 
-    @Column(name = "consommation", precision = 5, scale = 2)
+    @Column(name = "Consommation", precision = 5, scale = 2)
     private BigDecimal consommation;
 
-    @Column(name = "neuf", nullable = false)
+    @Column(name = "Neuf", nullable = false)
     private Boolean neuf;
 
-    @Column(name = "garantie", nullable = false)
+    @Column(name = "Garantie", nullable = false)
     private Boolean garantie;
 
-    @Column(name = "datefingarantie")
+    @Column(name = "DateFinGarantie")
     private LocalDate dateFinGarantie;
 
-    @Column(name = "envente", nullable = false)
+    @Column(name = "EnVente", nullable = false)
     private Boolean enVente;
 
     @ManyToOne
-    @JoinColumn(name = "proprietaire")
+    @JoinColumn(name = "Proprietaire")
     private Personne proprietaire;
 }

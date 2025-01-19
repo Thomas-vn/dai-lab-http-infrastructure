@@ -59,13 +59,13 @@
                 <label for="typeCarrosserie" class="form-label">Type Carrosserie:</label>
                 <select class="form-select" id="typeCarrosserie" name="typeCarrosserie" required>
                     <option value="" disabled selected>Select Type Carrosserie</option>
+                    <option value="Break">Break</option>
+                    <option value="Cabriolet">Cabriolet</option>
+                    <option value="Pick_up">Pick-up</option>
                     <option value="SUV">SUV</option>
-                    <option value="CABRIOLET">CABRIOLET</option>
-                    <option value="BREAK">BREAK</option>
-                    <option value="BERLINE">BERLINE</option>
-                    <option value="COMPACTE">COMPACTE</option>
-                    <option value="PICK_UP">PICK_UP</option>
-                    <option value="COUPE">COUPE</option>
+                    <option value="Coupe">Coupe</option>
+                    <option value="Berline">Berline</option>
+                    <option value="Compacte">Compacte</option>
                 </select>
             </div>
 
@@ -73,13 +73,16 @@
                 <label for="couleur" class="form-label">Couleur:</label>
                 <select class="form-select" id="couleur" name="couleur" required>
                     <option value="" disabled selected>Select Couleur</option>
-                    <option value="Bleu">Bleu</option>
                     <option value="Rouge">Rouge</option>
+                    <option value="Bleu">Bleu</option>
+                    <option value="Vert">Vert</option>
+                    <option value="Jaune">Jaune</option>
                     <option value="Noir">Noir</option>
                     <option value="Blanc">Blanc</option>
                     <option value="Gris">Gris</option>
-                    <option value="Vert">Vert</option>
-                    <option value="Jaune">Jaune</option>
+                    <option value="Marron">Marron</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Violet">Violet</option>
                 </select>
             </div>
 
@@ -124,8 +127,11 @@
                     <option value="" disabled selected>Select Type Combustible</option>
                     <option value="Essence">Essence</option>
                     <option value="Diesel">Diesel</option>
+                    <option value="Électrique">Électrique</option>
                     <option value="Hybride">Hybride</option>
-                    <option value="Electrique">Electrique</option>
+                    <option value="GPL">GPL</option>
+                    <option value="E85">E85</option>
+                    <option value="Hydrogène">Hydrogène</option>
                 </select>
             </div>
 
@@ -195,6 +201,13 @@
                 </div>
             </div>
 
+            <div class="mb-3">
+                <label for="proprietaire" class="form-label">Propriétaire:</label>
+                <select class="form-select" id="proprietaire" name="proprietaire" required>
+                    <option value="" disabled selected>Sélectionnez un propriétaire</option>
+                </select>
+            </div>
+
             <button type="submit" class="btn btn-custom">Create Voiture</button>
         </form>
     </div>
@@ -204,33 +217,51 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.getElementById('voitureForm').addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent default form submission
+    // Fonction pour charger les clients (propriétaires potentiels)
+    async function loadClients() {
+        try {
+            const response = await fetch('/api/clients');
+            const clients = await response.json();
+            const proprietaireSelect = document.getElementById('proprietaire');
+            proprietaireSelect.innerHTML = '<option value="" disabled selected>Sélectionnez un propriétaire</option>';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.noAVS;
+                option.textContent = `${client.nom} ${client.prenom} (${client.noAVS})`;
+                proprietaireSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erreur lors du chargement des clients:', error);
+            alert('Erreur lors du chargement des clients');
+        }
+    }
 
-        // Create a JavaScript object from the form data
+    document.getElementById('voitureForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
         const formData = new FormData(this);
         const data = {};
         formData.forEach((value, key) => {
-            // Convert string "true"/"false" to boolean for checkbox fields
             if (key === 'neuf' || key === 'garantie' || key === 'enVente') {
                 data[key] = value === 'true';
+            } else if (key === 'proprietaire') {
+                data[key] = { noAVS: value };
             } else {
                 data[key] = value;
             }
         });
 
-        // Make the AJAX request
         fetch('/api/voitures', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',  // Set Content-Type to JSON
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)  // Convert the data to JSON
+            body: JSON.stringify(data)
         })
             .then(response => {
                 if (response.ok) {
                     alert('Voiture created successfully!');
-                    this.reset();  // Reset form after successful creation
+                    this.reset();
                 } else {
                     alert('Error creating voiture');
                 }
@@ -239,6 +270,11 @@
                 console.error('Error:', error);
                 alert('An error occurred');
             });
+    });
+
+    // Charger les clients au chargement de la page
+    document.addEventListener('DOMContentLoaded', () => {
+        loadClients();
     });
 
     // Show/hide date fin garantie based on garantie selection
