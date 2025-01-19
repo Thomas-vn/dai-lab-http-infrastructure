@@ -41,6 +41,15 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    public List<ServiceDTO> getServiceByNoAVSMecanicien(Long noAVSMecanicien) {
+        List<Object[]> rawResults = serviceRepository.findByNoAVSMecanicienCustom(noAVSMecanicien);
+
+        return rawResults.stream()
+                .map(this::mapRowToServiceDTO)  // Using the new map function
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void createService(ServiceDTOnative service) {
         serviceRepository.saveCustom(
                 service.getServiceID(),

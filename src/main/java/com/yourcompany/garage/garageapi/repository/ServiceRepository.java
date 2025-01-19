@@ -33,6 +33,18 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Integer>
     List<Object[]> findByIdCustom(@Param("serviceID") Integer serviceID);
 
 
+    @Query(value = "select s.serviceid,\n" +
+            "       s.commentaire,\n" +
+            "       s.heuresdetravail,\n" +
+            "       s.reparationid,\n" +
+            "       s.noavsmecanicien,\n" +
+            "       t.description\n" +
+            "           from service s\n" +
+            "              join type_service t on s.typeserviceid = t.typeserviceid\n" +
+            "           where s.noavsmecanicien = :noAVSMecanicien", nativeQuery = true)
+    List<Object[]> findByNoAVSMecanicienCustom(Long noAVSMecanicien);
+
+
     @Query(value = "INSERT INTO service " +
             "VALUES (:serviceID, :commentaire, :heuresDeTravail, :reparationID, :noAVSMecanicien, :typeserviceid)",
             nativeQuery = true)

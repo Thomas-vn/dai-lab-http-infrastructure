@@ -34,6 +34,12 @@ public class ServiceController {
         return ResponseEntity.ok().body(service);
     }
 
+    @GetMapping("/mecanicien/{noAVSMecanicien}")
+    public List<ServiceDTO> getServiceByNoAVSMecanicien(@PathVariable("noAVSMecanicien") long noAVSMecanicien)
+            throws ResourceNotFoundException {
+        return serviceService.getServiceByNoAVSMecanicien(noAVSMecanicien);
+    }
+
     @PostMapping
     public void createService(@RequestBody ServiceDTOnative service) {
         serviceService.createService(service);
