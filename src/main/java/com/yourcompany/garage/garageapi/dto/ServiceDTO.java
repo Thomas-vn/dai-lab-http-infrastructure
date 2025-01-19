@@ -3,9 +3,6 @@ package com.yourcompany.garage.garageapi.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 @Data
 public class ServiceDTO {
     @JsonProperty("serviceID")

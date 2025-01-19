@@ -1,13 +1,9 @@
 package com.yourcompany.garage.garageapi.service;
 
 import com.yourcompany.garage.garageapi.entity.Client;
-import com.yourcompany.garage.garageapi.entity.Lieu;
-import com.yourcompany.garage.garageapi.entity.Mecanicien;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import com.yourcompany.garage.garageapi.repository.ClientRepository;
 import com.yourcompany.garage.garageapi.repository.LieuRepository;
-import com.yourcompany.garage.garageapi.repository.MecanicienRepository;
-import com.yourcompany.garage.garageapi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

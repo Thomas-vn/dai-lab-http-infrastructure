@@ -3,7 +3,6 @@ package com.yourcompany.garage.garageapi.service;
 import com.yourcompany.garage.garageapi.entity.Personne;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import com.yourcompany.garage.garageapi.repository.PersonneRepository;
-import com.yourcompany.garage.garageapi.repository.VoitureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

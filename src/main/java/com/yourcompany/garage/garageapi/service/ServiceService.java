@@ -1,6 +1,5 @@
 package com.yourcompany.garage.garageapi.service;
 
-import com.yourcompany.garage.garageapi.dto.IdDTO;
 import com.yourcompany.garage.garageapi.dto.ServiceDTO;
 import com.yourcompany.garage.garageapi.dto.ServiceDTOnative;
 

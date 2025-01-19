@@ -4,8 +4,6 @@ import com.yourcompany.garage.garageapi.entity.Client;
 import com.yourcompany.garage.garageapi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;

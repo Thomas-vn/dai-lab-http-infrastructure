@@ -6,14 +6,12 @@ import com.yourcompany.garage.garageapi.entity.TypeCarrosserie;
 import com.yourcompany.garage.garageapi.entity.TypeCouleurs;
 import com.yourcompany.garage.garageapi.entity.TypeCombustible;
 import com.yourcompany.garage.garageapi.entity.TypeBoiteVitesse;
-import com.yourcompany.garage.garageapi.entity.Personne;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import com.yourcompany.garage.garageapi.repository.VoitureRepository;
 import com.yourcompany.garage.garageapi.specification.VoitureSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

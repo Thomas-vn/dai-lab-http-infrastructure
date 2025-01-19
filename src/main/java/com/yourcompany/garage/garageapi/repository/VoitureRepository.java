@@ -2,11 +2,7 @@
 package com.yourcompany.garage.garageapi.repository;
 
 import com.yourcompany.garage.garageapi.entity.Voiture;
-import com.yourcompany.garage.garageapi.entity.Personne;
 import com.yourcompany.garage.garageapi.entity.TypeCarrosserie;
-import com.yourcompany.garage.garageapi.entity.TypeCouleurs;
-import com.yourcompany.garage.garageapi.entity.TypeCombustible;
-import com.yourcompany.garage.garageapi.entity.TypeBoiteVitesse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import com.yourcompany.garage.garageapi.dto.TypeServiceDTOnative;
 import com.yourcompany.garage.garageapi.repository.TypeServiceRepository;
 
-import com.yourcompany.garage.garageapi.service.TypeServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
