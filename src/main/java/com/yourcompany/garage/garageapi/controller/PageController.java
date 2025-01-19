@@ -84,4 +84,13 @@ public class PageController {
     public String reparationPage() {
         return "reparation";
     }
+
+    /**
+     * Types of Services List Page
+     * GET /api/type-services
+     */
+    @GetMapping("/type-service")
+    public String typeServicePage() {
+        return "typeService";
+    }
 }

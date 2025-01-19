@@ -29,8 +29,26 @@ public class TypeServiceServiceImpl implements TypeServiceService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<TypeServiceDTOnative> getAllTypeServicesByPrice(Double price, Double secondPrice) {
+        List<Object[]> results = typeServiceRepository.getAllTypeServicesByPriceCustom(price, secondPrice);
+        return results.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void createTypeService(TypeServiceDTOnative typeService) {
+        typeServiceRepository.createTypeServiceCustom(typeService.getPrix(), typeService.getDescription());
+    }
+
+    @Override
+    public void deleteTypeService(Integer typeServiceID) {
+        typeServiceRepository.deleteByIdCustom(typeServiceID);
+    }
+
     private TypeServiceDTOnative convertToDTO(Object[] result) {
-        Long typeServiceId = ((Number) result[0]).longValue();
+        Integer typeServiceId = ((Number) result[0]).intValue();
         Double prix = ((Number) result[1]).doubleValue();
         String description = (String) result[2];
         return new TypeServiceDTOnative(typeServiceId, prix, description);

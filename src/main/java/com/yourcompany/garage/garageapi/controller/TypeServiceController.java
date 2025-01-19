@@ -25,5 +25,20 @@ public class TypeServiceController {
         return typeServiceService.getAllTypeServices();
     }
 
+    @GetMapping("/{price}/{secondPrice}")
+    public List<TypeServiceDTOnative> getAllTypeServicesByPrice(@PathVariable("price") Double price, @PathVariable("secondPrice") Double secondPrice) {
+        return typeServiceService.getAllTypeServicesByPrice(price, secondPrice);
+    }
+
+    @PostMapping
+    public void createTypeService(@RequestBody TypeServiceDTOnative typeService) {
+        typeServiceService.createTypeService(typeService);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTypeService(@PathVariable("id") Integer typeServiceID) {
+        typeServiceService.deleteTypeService(typeServiceID);
+    }
+
 
 }

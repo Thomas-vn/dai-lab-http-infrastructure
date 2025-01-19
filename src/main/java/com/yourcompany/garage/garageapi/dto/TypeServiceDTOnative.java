@@ -9,7 +9,7 @@ import lombok.Data;
 public class TypeServiceDTOnative {
 
     @JsonProperty("typeServiceId")
-    private Long typeServiceId;
+    private Integer typeServiceId;
 
     @JsonProperty("prix")
     private Double prix;
@@ -17,7 +17,7 @@ public class TypeServiceDTOnative {
     @JsonProperty("description")
     private String description;
 
-    public TypeServiceDTOnative(Long typeServiceId, Double prix, String description) {
+    public TypeServiceDTOnative(Integer typeServiceId, Double prix, String description) {
         this.typeServiceId = typeServiceId;
         this.prix = prix;
         this.description = description;

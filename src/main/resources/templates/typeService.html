@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Type Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Type Management</h1>
+
+  <!-- Add Type Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h4>Add Type</h4>
+    </div>
+    <div class="card-body">
+      <form id="addTypeForm">
+        <div class="row">
+          <!-- Type ID -->
+          <div class="col-md-6 mb-3">
+            <label for="typeId" class="form-label">Type ID</label>
+            <input type="number" class="form-control" id="typeId" placeholder="Enter Type ID" required>
+          </div>
+          <!-- Price -->
+          <div class="col-md-6 mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" class="form-control" id="price" placeholder="Enter Price" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <input type="text" class="form-control" id="description" placeholder="Enter Description" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Add Type</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Search Types by Price Range -->
+  <div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+      <h4>Search Types by Price Range</h4>
+    </div>
+    <div class="card-body">
+      <form id="searchByPriceForm" class="mb-3">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="minPrice" class="form-label">Min Price</label>
+            <input type="number" class="form-control" id="minPrice" placeholder="Enter Min Price" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="maxPrice" class="form-label">Max Price</label>
+            <input type="number" class="form-control" id="maxPrice" placeholder="Enter Max Price" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+      </form>
+      <div id="priceSearchResult">
+        <!-- Price Search Result Table -->
+      </div>
+    </div>
+  </div>
+
+  <!-- All Types Table -->
+  <div class="card">
+    <div class="card-header bg-info text-white">
+      <h4>All Types</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered table-striped" id="typesTable">
+        <thead>
+        <tr>
+          <th>Type ID</th>
+          <th>Price</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Dynamic Rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const typesEndpoint = "/api/type-services";
+
+  // Fetch and display all types in the table
+  async function fetchAndDisplayAllTypes() {
+    const typesTableBody = document.querySelector("#typesTable tbody");
+    typesTableBody.innerHTML = ""; // Clear the table
+
+    try {
+      const types = await fetch(typesEndpoint).then(res => res.json());
+      types.forEach(type => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${type.typeServiceId || "N/A"}</td>
+          <td>${type.prix || "N/A"}</td>
+          <td>${type.description || "N/A"}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteType(${type.typeServiceId})">Delete</button></td>
+        `;
+        typesTableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("Error fetching types:", error);
+      alert("An error occurred while fetching types. Please try again later.");
+    }
+  }
+
+  // Add a type
+  document.getElementById("addTypeForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const type = {
+      typeServiceId: document.getElementById("typeId").value,
+      prix: document.getElementById("price").value,
+      description: document.getElementById("description").value,
+    };
+
+    await fetch(typesEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(type),
+    });
+
+    document.getElementById("addTypeForm").reset();
+    fetchAndDisplayAllTypes();
+  });
+
+  // Search for types by price range
+  document.getElementById("searchByPriceForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const minPrice = document.getElementById("minPrice").value;
+    const maxPrice = document.getElementById("maxPrice").value;
+    const priceSearchResultDiv = document.getElementById("priceSearchResult");
+
+    try {
+      const types = await fetch(`${typesEndpoint}/${minPrice}/${maxPrice}`).then(res => res.json());
+      if (types.length > 0) {
+        const rows = types.map(type => `
+        <tr>
+          <td>${type.typeServiceId}</td>
+          <td>${type.prix}</td>
+          <td>${type.description}</td>
+        </tr>
+        `).join("");
+        priceSearchResultDiv.innerHTML = `
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Type ID</th>
+              <th>Price</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        `;
+      } else {
+        priceSearchResultDiv.innerHTML = "<p class='text-danger'>No types found in this price range!</p>";
+      }
+    } catch (error) {
+      console.error("Error fetching types by price range:", error);
+      alert("An error occurred while fetching types. Please try again later.");
+    }
+  });
+
+  // Delete a type
+  async function deleteType(typeId) {
+    if (confirm(`Are you sure you want to delete Type ID: ${typeId}?`)) {
+        const response = await fetch(`${typesEndpoint}/${typeId}`, { method: "DELETE" });
+          alert("Type deleted successfully!");
+          fetchAndDisplayAllTypes();
+    }
+  }
+
+  // Initialize the page
+  fetchAndDisplayAllTypes();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
