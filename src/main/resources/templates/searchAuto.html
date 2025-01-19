@@ -1,4 +1,3 @@
-<!-- src/main/resources/templates/searchAuto.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,64 +31,16 @@
   <!-- Search by Marque -->
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Search by Marque</h5>
+      <h5 class="card-title">Search Cars by Marque</h5>
       <form id="searchByMarqueForm">
         <div class="mb-3">
-          <label for="marque" class="form-label">Marque</label>
-          <input type="text" class="form-control" id="marque" placeholder="e.g., Toyota" required>
+          <label for="marque" class="form-label">Marque (leave empty to show all cars)</label>
+          <input type="text" class="form-control" id="marque" placeholder="e.g., Toyota">
         </div>
         <button type="submit" class="btn btn-primary">Search</button>
       </form>
     </div>
   </div>
-
-  <!-- Search by Couleur -->
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Search by Couleur</h5>
-      <form id="searchByCouleurForm">
-        <div class="mb-3">
-          <label for="couleur" class="form-label">Couleur</label>
-          <select class="form-select" id="couleur" required>
-            <option value="" disabled selected>Select Couleur</option>
-            <option>Bleu</option>
-            <option>Rouge</option>
-            <option>Noir</option>
-            <option>Blanc</option>
-            <option>Gris</option>
-            <option>Vert</option>
-            <option>Jaune</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Search by Type Carrosserie -->
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Search by Type Carrosserie</h5>
-      <form id="searchByTypeCarrosserieForm">
-        <div class="mb-3">
-          <label for="typeCarrosserie" class="form-label">Type Carrosserie</label>
-          <select class="form-select" id="typeCarrosserie" required>
-            <option value="" disabled selected>Select Type Carrosserie</option>
-            <option>SUV</option>
-            <option>CABRIOLET</option>
-            <option>BREAK</option>
-            <option>BERLINE</option>
-            <option>COMPACTE</option>
-            <option>PICK_UP</option>
-            <option>COUPE</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Add more search forms as needed -->
 
   <!-- Results Section -->
   <div class="table-responsive">
@@ -102,15 +53,15 @@
         <th>Couleur</th>
         <th>Date Fabrication</th>
         <th>Nombre Places</th>
-        <th>Prix (€)</th>
+        <th>Prix</th>
         <th>Nombre Portes</th>
-        <th>Puissance (ch)</th>
+        <th>Puissance</th>
         <th>Description Options</th>
         <th>Date Expertise</th>
         <th>Type Combustible</th>
         <th>Nombre Km</th>
         <th>Type Boite Vitesse</th>
-        <th>Consommation (l/100km)</th>
+        <th>Consommation</th>
         <th>Neuf</th>
         <th>Garantie</th>
         <th>Date Fin Garantie</th>
@@ -119,78 +70,47 @@
       </tr>
       </thead>
       <tbody>
-      <!-- Results will be inserted here dynamically -->
+      <!-- Results will be populated here -->
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- Bootstrap JS and Dependencies -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Include jQuery for easier DOM manipulation (optional) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Load all cars on page load
+    fetchCars();
+
     // Handle Search by Marque
     document.getElementById('searchByMarqueForm').addEventListener('submit', function(event) {
       event.preventDefault();
+      fetchCars();
+    });
+
+    function fetchCars() {
       const marque = document.getElementById('marque').value.trim();
-      if (marque) {
-        fetch(`/api/voitures/marque/${encodeURIComponent(marque)}`)
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                  }
-                  return response.json();
-                })
-                .then(data => displayResults(data))
-                .catch(error => handleError(error));
-      }
-    });
+      const url = marque ? `/api/voitures/marque/${encodeURIComponent(marque)}` : '/api/voitures';
 
-    // Handle Search by Couleur
-    document.getElementById('searchByCouleurForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const couleur = document.getElementById('couleur').value;
-      if (couleur) {
-        fetch(`/api/voitures/couleur/${encodeURIComponent(couleur)}`)
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                  }
-                  return response.json();
-                })
-                .then(data => displayResults(data))
-                .catch(error => handleError(error));
-      }
-    });
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => displayResults(data))
+        .catch(error => handleError(error));
+    }
 
-    // Handle Search by Type Carrosserie
-    document.getElementById('searchByTypeCarrosserieForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const typeCarrosserie = document.getElementById('typeCarrosserie').value;
-      if (typeCarrosserie) {
-        fetch(`/api/voitures/typeCarrosserie/${encodeURIComponent(typeCarrosserie)}`)
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                  }
-                  return response.json();
-                })
-                .then(data => displayResults(data))
-                .catch(error => handleError(error));
-      }
-    });
-
-    // Function to display results in the table
     function displayResults(voitures) {
       const tbody = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
       tbody.innerHTML = ''; // Clear previous results
 
-      if (voitures.length === 0) {
+      if (!Array.isArray(voitures) || voitures.length === 0) {
         const row = tbody.insertRow();
         const cell = row.insertCell(0);
-        cell.colSpan = 19;
+        cell.colSpan = 20;
         cell.className = 'text-center';
         cell.textContent = 'No results found.';
         return;
@@ -199,31 +119,30 @@
       voitures.forEach(voiture => {
         const row = tbody.insertRow();
         row.innerHTML = `
-                    <td>${voiture.numeroChassis}</td>
-                    <td>${voiture.marque}</td>
-                    <td>${voiture.typeCarrosserie}</td>
-                    <td>${voiture.couleur}</td>
-                    <td>${voiture.dateFabrication}</td>
-                    <td>${voiture.nombrePlaces}</td>
-                    <td>${voiture.prix ? voiture.prix.toFixed(2) : 'N/A'}</td>
-                    <td>${voiture.nombrePortes}</td>
-                    <td>${voiture.puissance}</td>
-                    <td>${voiture.descriptionOptions || 'N/A'}</td>
-                    <td>${voiture.dateExpertise || 'N/A'}</td>
-                    <td>${voiture.typeCombustible}</td>
-                    <td>${voiture.nombreKm}</td>
-                    <td>${voiture.typeBoiteVitesse}</td>
-                    <td>${voiture.consommation ? voiture.consommation.toFixed(2) : 'N/A'}</td>
-                    <td>${voiture.neuf ? 'Oui' : 'Non'}</td>
-                    <td>${voiture.garantie ? 'Oui' : 'Non'}</td>
-                    <td>${voiture.dateFinGarantie || 'N/A'}</td>
-                    <td>${voiture.enVente ? 'Oui' : 'Non'}</td>
-                    <td>${voiture.proprietaire ? voiture.proprietaire.noAVS : 'N/A'}</td>
-                `;
+          <td>${voiture.numeroChassis || 'N/A'}</td>
+          <td>${voiture.marque || 'N/A'}</td>
+          <td>${voiture.typeCarrosserie || 'N/A'}</td>
+          <td>${voiture.couleur || 'N/A'}</td>
+          <td>${voiture.dateFabrication || 'N/A'}</td>
+          <td>${voiture.nombrePlaces || 'N/A'}</td>
+          <td>${voiture.prix ? voiture.prix.toFixed(2) : 'N/A'}</td>
+          <td>${voiture.nombrePortes || 'N/A'}</td>
+          <td>${voiture.puissance || 'N/A'}</td>
+          <td>${voiture.descriptionOptions || 'N/A'}</td>
+          <td>${voiture.dateExpertise || 'N/A'}</td>
+          <td>${voiture.typeCombustible || 'N/A'}</td>
+          <td>${voiture.nombreKm || 'N/A'}</td>
+          <td>${voiture.typeBoiteVitesse || 'N/A'}</td>
+          <td>${voiture.consommation ? voiture.consommation.toFixed(2) : 'N/A'}</td>
+          <td>${voiture.neuf ? 'Oui' : 'Non'}</td>
+          <td>${voiture.garantie ? 'Oui' : 'Non'}</td>
+          <td>${voiture.dateFinGarantie || 'N/A'}</td>
+          <td>${voiture.enVente ? 'Oui' : 'Non'}</td>
+          <td>${voiture.proprietaireNoAVS || 'N/A'}</td>
+        `;
       });
     }
 
-    // Function to handle errors
     function handleError(error) {
       console.error('Error:', error);
       alert('An error occurred while fetching data. Please try again.');
