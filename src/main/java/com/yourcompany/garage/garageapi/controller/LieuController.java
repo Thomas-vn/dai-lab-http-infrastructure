@@ -5,6 +5,7 @@ import com.yourcompany.garage.garageapi.service.LieuService;
 import com.yourcompany.garage.garageapi.dto.IdDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/lieu")
@@ -16,6 +17,13 @@ public class LieuController {
     @GetMapping
     public Iterable<Lieu> getAllLieu() {
         return lieuService.getAllLieu();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Lieu> getLieuById(@PathVariable Integer id) {
+        return lieuService.getLieuById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping

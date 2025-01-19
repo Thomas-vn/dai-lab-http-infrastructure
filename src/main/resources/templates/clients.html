@@ -26,6 +26,9 @@
                         <th>No AVS</th>
                         <th>Nom</th>
                         <th>Prénom</th>
+                        <th>Date de naissance</th>
+                        <th>Sexe</th>
+                        <th>Lieu</th>
                         <th>Date d'ajout</th>
                         <th>Actions</th>
                     </tr>
@@ -58,6 +61,23 @@
                             <label for="prenom" class="form-label">Prénom</label>
                             <input type="text" class="form-control" id="prenom" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="dateNaissance" class="form-label">Date de naissance</label>
+                            <input type="date" class="form-control" id="dateNaissance" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sexe" class="form-label">Sexe</label>
+                            <select class="form-control" id="sexe" required>
+                                <option value="M">Masculin</option>
+                                <option value="F">Féminin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lieu" class="form-label">Lieu</label>
+                            <select class="form-control" id="lieu">
+                                <option value="">Sélectionner un lieu</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -87,6 +107,23 @@
                             <label for="editPrenom" class="form-label">Prénom</label>
                             <input type="text" class="form-control" id="editPrenom" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="editDateNaissance" class="form-label">Date de naissance</label>
+                            <input type="date" class="form-control" id="editDateNaissance" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSexe" class="form-label">Sexe</label>
+                            <select class="form-control" id="editSexe" required>
+                                <option value="M">Masculin</option>
+                                <option value="F">Féminin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLieu" class="form-label">Lieu</label>
+                            <select class="form-control" id="editLieu">
+                                <option value="">Sélectionner un lieu</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -115,125 +152,175 @@
             setTimeout(() => alert.classList.add('d-none'), 3000);
         }
 
-        function loadClients() {
-            fetch('/api/clients')
-                .then(response => response.json())
-                .then(clients => {
-                    currentClients = clients;
-                    const tbody = document.getElementById('clientsTableBody');
-                    tbody.innerHTML = '';
-                    clients.forEach(client => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${client.noAVS || '-'}</td>
-                            <td>${client.nom || '-'}</td>
-                            <td>${client.prenom || '-'}</td>
-                            <td>${formatDate(client.dateAjout)}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-1" onclick="openEditModal(${client.noAVS})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.noAVS})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
+        async function loadLieux() {
+            try {
+                const response = await fetch('/api/lieu');
+                const lieux = await response.json();
+                const lieuSelects = document.querySelectorAll('#lieu, #editLieu');
+                
+                lieuSelects.forEach(select => {
+                    select.innerHTML = '<option value="">Sélectionner un lieu</option>';
+                    lieux.forEach(lieu => {
+                        const option = document.createElement('option');
+                        option.value = lieu.id;
+                        option.textContent = `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+                        select.appendChild(option);
                     });
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    showAlert('Erreur lors du chargement des données', 'danger');
                 });
+            } catch (error) {
+                console.error('Erreur lors du chargement des lieux:', error);
+                showAlert('Erreur lors du chargement des lieux', 'danger');
+            }
         }
 
-        function createClient() {
+        async function loadClients() {
+            try {
+                const response = await fetch('/api/clients');
+                const clients = await response.json();
+                const tableBody = document.getElementById('clientsTableBody');
+                tableBody.innerHTML = '';
+                
+                clients.forEach(client => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${client.noAVS}</td>
+                        <td>${client.nom}</td>
+                        <td>${client.prenom}</td>
+                        <td>${formatDate(client.dateNaissance)}</td>
+                        <td>${client.sexe === 'M' ? 'Masculin' : 'Féminin'}</td>
+                        <td>${client.lieu ? `${client.lieu.rue} ${client.lieu.numero}, ${client.lieu.npa} ${client.lieu.ville}` : '-'}</td>
+                        <td>${formatDate(client.dateAjout)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="openEditModal(${client.noAVS})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.noAVS})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Erreur lors du chargement des clients:', error);
+                showAlert('Erreur lors du chargement des clients', 'danger');
+            }
+        }
+
+        async function createClient() {
             const client = {
                 noAVS: document.getElementById('noAVS').value,
                 nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value
+                prenom: document.getElementById('prenom').value,
+                dateNaissance: document.getElementById('dateNaissance').value,
+                sexe: document.getElementById('sexe').value,
+                lieu: {
+                    id: document.getElementById('lieu').value || null
+                },
+                dateAjout: new Date().toISOString().split('T')[0]
             };
 
-            fetch('/api/clients', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(client)
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erreur lors de la création');
-                return response.json();
-            })
-            .then(() => {
+            try {
+                const response = await fetch('/api/clients', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(client)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la création du client');
+                }
+
                 showAlert('Client créé avec succès', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
                 document.getElementById('addClientForm').reset();
+                bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
                 loadClients();
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Erreur:', error);
                 showAlert('Erreur lors de la création du client', 'danger');
-            });
-        }
-
-        function openEditModal(noAVS) {
-            const client = currentClients.find(c => c.noAVS === noAVS);
-            if (client) {
-                document.getElementById('editNoAVS').value = client.noAVS;
-                document.getElementById('editNom').value = client.nom;
-                document.getElementById('editPrenom').value = client.prenom;
-                new bootstrap.Modal(document.getElementById('editClientModal')).show();
             }
         }
 
-        function updateClient() {
+        async function updateClient() {
             const noAVS = document.getElementById('editNoAVS').value;
             const client = {
                 nom: document.getElementById('editNom').value,
-                prenom: document.getElementById('editPrenom').value
+                prenom: document.getElementById('editPrenom').value,
+                dateNaissance: document.getElementById('editDateNaissance').value,
+                sexe: document.getElementById('editSexe').value,
+                lieu: {
+                    id: document.getElementById('editLieu').value || null
+                }
             };
 
-            fetch(`/api/clients/${noAVS}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(client)
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erreur lors de la modification');
-                return response.json();
-            })
-            .then(() => {
-                showAlert('Client modifié avec succès', 'success');
+            try {
+                const response = await fetch(`/api/clients/${noAVS}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(client)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la mise à jour du client');
+                }
+
+                showAlert('Client mis à jour avec succès', 'success');
                 bootstrap.Modal.getInstance(document.getElementById('editClientModal')).hide();
                 loadClients();
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Erreur:', error);
-                showAlert('Erreur lors de la modification du client', 'danger');
-            });
-        }
-
-        function deleteClient(noAVS) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
-                fetch(`/api/clients/${noAVS}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Erreur lors de la suppression');
-                    showAlert('Client supprimé avec succès', 'success');
-                    loadClients();
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    showAlert('Erreur lors de la suppression du client', 'danger');
-                });
+                showAlert('Erreur lors de la mise à jour du client', 'danger');
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadClients);
+        async function openEditModal(noAVS) {
+            try {
+                const response = await fetch(`/api/clients/${noAVS}`);
+                const client = await response.json();
+                
+                document.getElementById('editNoAVS').value = client.noAVS;
+                document.getElementById('editNom').value = client.nom;
+                document.getElementById('editPrenom').value = client.prenom;
+                document.getElementById('editDateNaissance').value = client.dateNaissance;
+                document.getElementById('editSexe').value = client.sexe;
+                document.getElementById('editLieu').value = client.lieu ? client.lieu.id : '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('editClientModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors du chargement du client', 'danger');
+            }
+        }
+
+        async function deleteClient(noAVS) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
+                try {
+                    const response = await fetch(`/api/clients/${noAVS}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la suppression du client');
+                    }
+
+                    showAlert('Client supprimé avec succès', 'success');
+                    loadClients();
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    showAlert('Erreur lors de la suppression du client', 'danger');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClients();
+            loadLieux();
+        });
     </script>
 </body>
 </html>
