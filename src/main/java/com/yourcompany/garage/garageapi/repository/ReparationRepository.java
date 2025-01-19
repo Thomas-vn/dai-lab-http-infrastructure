@@ -1,6 +1,5 @@
 package com.yourcompany.garage.garageapi.repository;
 
-import com.yourcompany.garage.garageapi.dto.ReparationDTO;
 import com.yourcompany.garage.garageapi.entity.Reparation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

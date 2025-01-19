@@ -1,15 +1,12 @@
 package com.yourcompany.garage.garageapi.controller;
 
-import com.yourcompany.garage.garageapi.dto.IdDTO;
 import com.yourcompany.garage.garageapi.dto.ReparationDTO;
-import com.yourcompany.garage.garageapi.dto.ReparationDTOSecond;
-import com.yourcompany.garage.garageapi.entity.Reparation;
+import com.yourcompany.garage.garageapi.dto.ReparationDTOnative;
 import com.yourcompany.garage.garageapi.service.ReparationService;
 import com.yourcompany.garage.garageapi.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -61,7 +58,7 @@ public class ReparationController {
      * POST /api/reparations
      */
     @PostMapping
-    public boolean createReparation(@RequestBody ReparationDTOSecond reparation) {
+    public boolean createReparation(@RequestBody ReparationDTOnative reparation) {
         System.out.println("Received reparation: " + reparation);
         reparationService.createReparation(reparation);
         return true;

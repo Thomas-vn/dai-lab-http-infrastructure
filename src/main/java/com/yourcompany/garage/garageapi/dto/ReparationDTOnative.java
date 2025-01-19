@@ -3,13 +3,12 @@ package com.yourcompany.garage.garageapi.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.springframework.boot.json.GsonJsonParser;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-public class ReparationDTOSecond {
+public class ReparationDTOnative {
 
     @JsonProperty("reparationID")
     private Integer reparationID;
@@ -32,7 +31,7 @@ public class ReparationDTOSecond {
     private Integer ville;
 
 
-    public ReparationDTOSecond(Integer reparationID, BigDecimal prix, LocalDate dateDebut, LocalDate dateFin, String numeroChassis, Integer ville) {
+    public ReparationDTOnative(Integer reparationID, BigDecimal prix, LocalDate dateDebut, LocalDate dateFin, String numeroChassis, Integer ville) {
         this.reparationID = reparationID;
         this.prix = prix;
         this.dateDebut = dateDebut;
