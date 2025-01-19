@@ -224,12 +224,12 @@
   document.getElementById("searchForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const serviceID = document.getElementById("searchServiceID").value;
+    const searchServiceID = document.getElementById("searchServiceID").value;
     const searchResultDiv = document.getElementById("searchResult");
 
     try {
-      const response = await fetch(`${servicesEndpoint}/${serviceID}`);
-      console.log(`Fetching: ${servicesEndpoint}/${serviceID}`);
+      const response = await fetch(`${servicesEndpoint}/${searchServiceID}`);
+      console.log(`Fetching: ${servicesEndpoint}/${searchServiceID}`);
       if (!response.ok) {
         searchResultDiv.innerHTML = "<p class='text-danger'>Service not found!</p>";
         return;
