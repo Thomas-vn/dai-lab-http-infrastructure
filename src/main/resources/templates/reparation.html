@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reparation Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Reparation Management</h1>
+
+    <!-- Add Reparation Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Add Reparation</h4>
+        </div>
+        <div class="card-body">
+            <form id="addReparationForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="reparationID" class="form-label">Reparation ID</label>
+                        <input type="number" class="form-control" id="reparationID" name="reparationID" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="prix" class="form-label">Prix</label>
+                        <input type="number" step="0.01" class="form-control" id="prix" name="prix" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="dateDebut" class="form-label">Date Début</label>
+                        <input type="date" class="form-control" id="dateDebut" name="dateDebut" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="dateFin" class="form-label">Date Fin</label>
+                        <input type="date" class="form-control" id="dateFin" name="dateFin" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="carId" class="form-label">Select Car (Numero Chassis)</label>
+                        <select class="form-select" id="carId" name="carId" required>
+                            <!-- Options will be dynamically populated -->
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="ville" class="form-label">Ville</label>
+                        <select class="form-select" id="ville" name="ville" required>
+                            <!-- Options will be dynamically populated -->
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Add Reparation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Reparation Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h4>Search Reparation</h4>
+        </div>
+        <div class="card-body">
+            <form id="searchReparationForm" class="mb-3">
+                <div class="input-group">
+                    <input type="number" class="form-control" id="searchReparationID" placeholder="Enter Reparation ID" required>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+            <div id="reparationSearchResult">
+                <!-- Search Result Table -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Reparation by Car ID Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h4>Search Reparations by Car ID</h4>
+        </div>
+        <div class="card-body">
+            <form id="searchByCarIDForm" class="mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="carID" placeholder="Enter Car ID (Numero Chassis)" required>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+            <div id="carSearchResult">
+                <!-- Search Result Table -->
+            </div>
+        </div>
+    </div>
+
+    <!-- All Reparations Table -->
+    <div class="card">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4>All Reparations</h4>
+            <button id="fetchReparationsBtn" class="btn btn-primary">Refresh Reparations</button>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped" id="reparationsTable">
+                <thead>
+                <tr>
+                    <th>Reparation ID</th>
+                    <th>Prix</th>
+                    <th>Date Début</th>
+                    <th>Date Fin</th>
+                    <th>Numero Chassis</th>
+                    <th>Ville</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const reparationsEndpoint = "/api/reparations";
+    const voitureEndpoint = "/api/voitures";
+    const lieuEndpoint = "/api/lieu";
+
+    // Fetch and display all cars
+    async function populateCarDropdown() {
+        const carDropdown = document.getElementById("carId"); // Ensure the dropdown ID is correct
+
+        try {
+            // Fetch the voiture data
+            const response = await fetch('/api/voitures');
+            const voitures = await response.json();
+
+            // Clear existing options in the dropdown
+            carDropdown.innerHTML = "";
+
+            // Populate the dropdown with voiture data
+            voitures.forEach(voiture => {
+                const option = document.createElement("option");
+                option.value = voiture.numeroChassis; // Set value as numeroChassis
+                option.textContent = `${voiture.numeroChassis} - ${voiture.marque} (${voiture.typeCarrosserie})`; // Display details
+                carDropdown.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error populating car dropdown:", error);
+            alert("Failed to load car data for dropdown.");
+        }
+    }
+
+    async function populateVilleDropdown() {
+        const villeDropdown = document.getElementById("ville"); // Target the ville dropdown
+
+        try {
+            // Fetch the lieux data
+            const response = await fetch('/api/lieu');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const lieux = await response.json();
+
+            // Clear existing options in the dropdown
+            villeDropdown.innerHTML = "";
+
+            // Add a default placeholder option
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Select a Ville";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            villeDropdown.appendChild(defaultOption);
+
+            // Populate the dropdown with lieu data
+            lieux.forEach(lieu => {
+                const option = document.createElement("option");
+                option.value = lieu.id; // Set the id of the lieu as the value
+                option.textContent = lieu.ville; // Display the ville name
+                villeDropdown.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error populating ville dropdown:", error);
+            alert("Failed to load ville data for dropdown.");
+        }
+    }
+
+
+    // Call the function on page load
+    populateCarDropdown();
+    populateVilleDropdown();
+
+    document.getElementById("fetchReparationsBtn").addEventListener("click", fetchAndDisplayAllReparations);
+
+    // Fetch and display all reparations
+    async function fetchAndDisplayAllReparations() {
+        const reparationsTableBody = document.querySelector("#reparationsTable tbody");
+        reparationsTableBody.innerHTML = ""; // Clear the table
+
+        try {
+            const reparations = await fetch(reparationsEndpoint).then(res => res.json());
+            reparations.forEach(reparation => {
+                const row = `
+          <tr>
+            <td>${reparation.reparationID}</td>
+            <td>${reparation.prix}</td>
+            <td>${reparation.dateDebut}</td>
+            <td>${reparation.dateFin}</td>
+            <td>${reparation.numeroChassis}</td>
+            <td>${reparation.ville}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteReparation(${reparation.reparationID})">Delete</button></td>
+          </tr>`;
+                reparationsTableBody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error("Error fetching reparations:", error);
+        }
+    }
+
+    // Add a reparation
+    document.getElementById("addReparationForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const reparation = {
+            reparationID: document.getElementById("reparationID").value,
+            prix: document.getElementById("prix").value,
+            dateDebut: document.getElementById("dateDebut").value,
+            dateFin: document.getElementById("dateFin").value,
+            numeroChassis: document.getElementById("carId").value, // Selected car ID
+            lieuId: document.getElementById("ville").value, // Selected lieu ID
+        };
+
+        try {
+            await fetch("/api/reparations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reparation),
+            });
+
+            alert("Reparation added successfully!");
+            document.getElementById("addReparationForm").reset();
+        } catch (error) {
+            console.error("Error adding reparation:", error);
+            alert("Failed to add reparation.");
+        }
+    });
+
+    document.getElementById("searchReparationForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const reparationID = document.getElementById("searchReparationID").value;
+        const searchResultDiv = document.getElementById("reparationSearchResult");
+
+        try {
+            const reparation = await fetch(`${reparationsEndpoint}/${reparationID}`).then(res => res.json());
+            if (reparation) {
+                searchResultDiv.innerHTML = `
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Reparation ID</th>
+                <th>Prix</th>
+                <th>Date Début</th>
+                <th>Date Fin</th>
+                <th>Numero Chassis</th>
+                <th>Ville</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${reparation.reparationID}</td>
+                <td>${reparation.prix}</td>
+                <td>${reparation.dateDebut}</td>
+                <td>${reparation.dateFin}</td>
+                <td>${reparation.numeroChassis}</td>
+                <td>${reparation.ville}</td>
+              </tr>
+            </tbody>
+          </table>`;
+            } else {
+                searchResultDiv.innerHTML = "<p class='text-danger'>Reparation not found!</p>";
+            }
+        } catch (error) {
+            console.error("Error fetching reparation:", error);
+        }
+    });
+
+    // Search reparations by car ID
+    document.getElementById("searchByCarIDForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const carID = document.getElementById("carID").value;
+        const carSearchResultDiv = document.getElementById("carSearchResult");
+
+        try {
+            const reparations = await fetch(`${reparationsEndpoint}/voiture/${carID}`).then(res => res.json());
+            if (reparations.length > 0) {
+                const rows = reparations.map(reparation => `
+                <tr>
+                    <td>${reparation.reparationID}</td>
+                    <td>${reparation.prix}</td>
+                    <td>${reparation.dateDebut}</td>
+                    <td>${reparation.dateFin}</td>
+                    <td>${reparation.numeroChassis}</td>
+                    <td>${reparation.ville}</td>
+                </tr>
+            `).join("");
+
+                carSearchResultDiv.innerHTML = `
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Reparation ID</th>
+                            <th>Prix</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                            <th>Numero Chassis</th>
+                            <th>Ville</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+            } else {
+                carSearchResultDiv.innerHTML = "<p class='text-danger'>No reparations found for this car ID!</p>";
+            }
+        } catch (error) {
+            console.error("Error fetching reparations by car ID:", error);
+        }
+    });
+
+    // Delete a reparation
+    async function deleteReparation(reparationID) {
+        try {
+            if (confirm(`Are you sure you want to delete Reparation ID ${reparationID}?`)) {
+                const response = await fetch(`${reparationsEndpoint}/${reparationID}`, { method: "DELETE" });
+                if (response.ok) {
+                    alert("Reparation deleted successfully!");
+                    fetchAndDisplayAllReparations(); // Refresh the table
+                } else {
+                    alert("Failed to delete reparation!");
+                }
+            }
+        } catch (error) {
+            console.error("Error deleting reparation:", error);
+        }
+    }
+
+    // Initialize the page
+    fetchAndDisplayAllReparations();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

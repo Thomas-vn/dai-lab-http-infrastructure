@@ -66,4 +66,22 @@ public class PageController {
     public String mechanicsPage() {
         return "mechanics";
     }
+
+    /**
+     * Services List Page
+     * GET /api/services
+     */
+    @GetMapping("/service")
+    public String servicePage() {
+        return "service";
+    }
+
+    /**
+     * Reparations List Page
+     * GET /api/reparations
+     */
+    @GetMapping("/reparation")
+    public String reparationPage() {
+        return "reparation";
+    }
 }
