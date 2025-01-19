@@ -8,8 +8,4 @@ import lombok.Data;
 @Data
 @PrimaryKeyJoinColumn(name = "noavs")
 public class Mecanicien extends Personnel {
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "lieu_id", nullable = false)
-    private Lieu lieu;
 }

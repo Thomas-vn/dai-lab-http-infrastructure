@@ -44,9 +44,13 @@ public class MecanicienServiceImpl implements MecanicienService {
         validateMecanicien(mecanicien);
 
         try {
-            // Sauvegarde du lieu d'abord s'il est nouveau
-            if (mecanicien.getLieu() != null && mecanicien.getLieu().getId() == null) {
-                mecanicien.setLieu(lieuRepository.save(mecanicien.getLieu()));
+            // Vérification et récupération du lieu
+            if (mecanicien.getLieu() != null && mecanicien.getLieu().getId() != null) {
+                Integer lieuId = mecanicien.getLieu().getId();
+                mecanicien.setLieu(lieuRepository.findById(lieuId)
+                    .orElseThrow(() -> new IllegalArgumentException("Le lieu spécifié n'existe pas")));
+            } else {
+                throw new IllegalArgumentException("Un lieu valide doit être spécifié");
             }
 
             // Vérification du superviseur
@@ -95,9 +99,6 @@ public class MecanicienServiceImpl implements MecanicienService {
             mecanicien.getDateFinContrat().isBefore(mecanicien.getDateDebutContrat())) {
             throw new IllegalArgumentException("La date de fin de contrat doit être postérieure à la date de début");
         }
-        if (mecanicien.getLieu() == null) {
-            throw new IllegalArgumentException("Le lieu est obligatoire");
-        }
     }
 
     @Override
@@ -108,35 +109,38 @@ public class MecanicienServiceImpl implements MecanicienService {
 
     @Override
     public Mecanicien updateMecanicien(Long noAVS, Mecanicien mecanicienDetails) {
-        return mecanicienRepository.findById(noAVS)
-            .map(mecanicien -> {
-                if (mecanicienDetails.getNom() != null) {
-                    mecanicien.setNom(mecanicienDetails.getNom());
-                }
-                if (mecanicienDetails.getPrenom() != null) {
-                    mecanicien.setPrenom(mecanicienDetails.getPrenom());
-                }
-                if (mecanicienDetails.getSalaire() != null) {
-                    mecanicien.setSalaire(mecanicienDetails.getSalaire());
-                }
-                if (mecanicienDetails.getPoste() != null) {
-                    mecanicien.setPoste(mecanicienDetails.getPoste());
-                }
-                if (mecanicienDetails.getDateDebutContrat() != null) {
-                    mecanicien.setDateDebutContrat(mecanicienDetails.getDateDebutContrat());
-                }
-                if (mecanicienDetails.getDateFinContrat() != null) {
-                    mecanicien.setDateFinContrat(mecanicienDetails.getDateFinContrat());
-                }
-                if (mecanicienDetails.getSupervisor() != null) {
-                    mecanicien.setSupervisor(mecanicienDetails.getSupervisor());
-                }
-                if (mecanicienDetails.getLieu() != null) {
-                    mecanicien.setLieu(mecanicienDetails.getLieu());
-                }
-                return mecanicienRepository.save(mecanicien);
-            })
-            .orElseThrow(() -> new ResourceNotFoundException("Mécanicien non trouvé avec le NoAVS: " + noAVS));
+        Mecanicien mecanicien = mecanicienRepository.findById(noAVS)
+            .orElseThrow(() -> new ResourceNotFoundException("Mécanicien non trouvé avec le noAVS: " + noAVS));
+
+        // Mise à jour des champs
+        mecanicien.setNom(mecanicienDetails.getNom());
+        mecanicien.setPrenom(mecanicienDetails.getPrenom());
+        mecanicien.setDateNaissance(mecanicienDetails.getDateNaissance());
+        mecanicien.setSexe(mecanicienDetails.getSexe());
+        mecanicien.setSalaire(mecanicienDetails.getSalaire());
+        mecanicien.setPoste(mecanicienDetails.getPoste());
+        mecanicien.setDateDebutContrat(mecanicienDetails.getDateDebutContrat());
+        mecanicien.setDateFinContrat(mecanicienDetails.getDateFinContrat());
+
+        // Mise à jour du lieu
+        if (mecanicienDetails.getLieu() != null && mecanicienDetails.getLieu().getId() != null) {
+            Integer lieuId = mecanicienDetails.getLieu().getId();
+            mecanicien.setLieu(lieuRepository.findById(lieuId)
+                .orElseThrow(() -> new IllegalArgumentException("Le lieu spécifié n'existe pas")));
+        }
+
+        // Mise à jour du superviseur si spécifié
+        if (mecanicienDetails.getSupervisor() != null) {
+            if (mecanicienDetails.getSupervisor().getNoAVS().equals(noAVS)) {
+                throw new IllegalArgumentException("Un mécanicien ne peut pas être son propre superviseur");
+            }
+            if (!mecanicienRepository.existsById(mecanicienDetails.getSupervisor().getNoAVS())) {
+                throw new IllegalArgumentException("Le superviseur spécifié n'existe pas");
+            }
+            mecanicien.setSupervisor(mecanicienDetails.getSupervisor());
+        }
+
+        return mecanicienRepository.save(mecanicien);
     }
 
     @Override

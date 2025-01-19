@@ -305,10 +305,8 @@
             }
 
             // Récupération du lieu sélectionné
-            const lieuId = document.getElementById('lieuId').value;
-            const selectedLieu = allLieux.find(lieu => lieu.id == lieuId);
-            
-            if (!selectedLieu) {
+            const lieuId = parseInt(document.getElementById('lieuId').value);
+            if (!lieuId) {
                 showAlert('Veuillez sélectionner une adresse valide', 'danger');
                 return;
             }
@@ -323,7 +321,9 @@
                 poste: document.getElementById('poste').value.trim(),
                 dateDebutContrat: document.getElementById('dateDebutContrat').value,
                 dateFinContrat: document.getElementById('dateFinContrat').value || null,
-                lieu: selectedLieu
+                lieu: {
+                    id: lieuId
+                }
             };
 
             fetch('/api/mechanics', {
@@ -408,10 +408,8 @@
             }
 
             // Récupération du lieu sélectionné
-            const lieuId = document.getElementById('editLieuId').value;
-            const selectedLieu = allLieux.find(lieu => lieu.id == lieuId);
-            
-            if (!selectedLieu) {
+            const lieuId = parseInt(document.getElementById('editLieuId').value);
+            if (!lieuId) {
                 showAlert('Veuillez sélectionner une adresse valide', 'danger');
                 return;
             }
@@ -426,7 +424,9 @@
                 poste: document.getElementById('editPoste').value.trim(),
                 dateDebutContrat: document.getElementById('editDateDebutContrat').value,
                 dateFinContrat: document.getElementById('editDateFinContrat').value || null,
-                lieu: selectedLieu
+                lieu: {
+                    id: lieuId
+                }
             };
 
             fetch(`/api/mechanics/${noAVS}`, {
