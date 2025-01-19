@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Mécaniciens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Gestion des Mécaniciens</h1>
+
+        <!-- Button to trigger new mechanic modal -->
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addMechanicModal">
+            <i class="fas fa-plus"></i> Nouveau Mécanicien
+        </button>
+
+        <!-- Alert for feedback messages -->
+        <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+        <!-- Mechanics Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No AVS</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Date de naissance</th>
+                        <th>Sexe</th>
+                        <th>Adresse</th>
+                        <th>Salaire</th>
+                        <th>Poste</th>
+                        <th>Début contrat</th>
+                        <th>Fin contrat</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="mechanicsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Mechanic Modal -->
+    <div class="modal fade" id="addMechanicModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau Mécanicien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMechanicForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="noAVS" class="form-label">No AVS</label>
+                                <input type="number" class="form-control" id="noAVS" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sexe" class="form-label">Sexe</label>
+                                <select class="form-control" id="sexe" required>
+                                    <option value="M">Homme</option>
+                                    <option value="F">Femme</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="nom" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="prenom" class="form-label">Prénom</label>
+                                <input type="text" class="form-control" id="prenom" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dateNaissance" class="form-label">Date de naissance</label>
+                                <input type="date" class="form-control" id="dateNaissance" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salaire" class="form-label">Salaire (CHF)</label>
+                                <input type="number" class="form-control" id="salaire" required step="0.01">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dateDebutContrat" class="form-label">Début contrat</label>
+                                <input type="date" class="form-control" id="dateDebutContrat" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="dateFinContrat" class="form-label">Fin contrat</label>
+                                <input type="date" class="form-control" id="dateFinContrat">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="poste" class="form-label">Poste</label>
+                            <input type="text" class="form-control" id="poste" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lieuId" class="form-label">Adresse</label>
+                            <select class="form-select" id="lieuId" required>
+                                <option value="">Sélectionnez une adresse</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="createMechanic()">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Mechanic Modal -->
+    <div class="modal fade" id="editMechanicModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier un mécanicien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMechanicForm">
+                        <input type="hidden" id="editNoAVS">
+                        <div class="mb-3">
+                            <label for="editNom" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="editNom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrenom" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="editPrenom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDateNaissance" class="form-label">Date de naissance</label>
+                            <input type="date" class="form-control" id="editDateNaissance" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSexe" class="form-label">Sexe</label>
+                            <select class="form-select" id="editSexe" required>
+                                <option value="M">Masculin</option>
+                                <option value="F">Féminin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSalaire" class="form-label">Salaire</label>
+                            <input type="number" step="0.01" class="form-control" id="editSalaire" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPoste" class="form-label">Poste</label>
+                            <input type="text" class="form-control" id="editPoste" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLieuId" class="form-label">Adresse</label>
+                            <select class="form-select" id="editLieuId" required>
+                                <option value="">Sélectionnez une adresse</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDateDebutContrat" class="form-label">Date de début de contrat</label>
+                            <input type="date" class="form-control" id="editDateDebutContrat" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDateFinContrat" class="form-label">Date de fin de contrat</label>
+                            <input type="date" class="form-control" id="editDateFinContrat">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="updateMechanic()">Modifier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentMechanics = [];
+        let allLieux = [];
+
+        // Fonction pour charger les lieux
+        function loadLieux() {
+            fetch('/api/lieu')
+                .then(response => response.json())
+                .then(data => {
+                    allLieux = data;
+                    const lieuSelect = document.getElementById('lieuId');
+                    lieuSelect.innerHTML = '<option value="">Sélectionnez une adresse</option>';
+                    data.forEach(lieu => {
+                        const option = document.createElement('option');
+                        option.value = lieu.id;
+                        option.textContent = `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+                        lieuSelect.appendChild(option);
+                    });
+                    const editLieuSelect = document.getElementById('editLieuId');
+                    editLieuSelect.innerHTML = '<option value="">Sélectionnez une adresse</option>';
+                    data.forEach(lieu => {
+                        const option = document.createElement('option');
+                        option.value = lieu.id;
+                        option.textContent = `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+                        editLieuSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des lieux:', error);
+                    showAlert('Erreur lors du chargement des adresses', 'danger');
+                });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-CH');
+        }
+
+        function formatMoney(amount) {
+            if (!amount) return '-';
+            return new Intl.NumberFormat('fr-CH', {
+                style: 'currency',
+                currency: 'CHF'
+            }).format(amount);
+        }
+
+        function formatAddress(lieu) {
+            if (!lieu) return '-';
+            return `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.classList.remove('d-none');
+            setTimeout(() => alert.classList.add('d-none'), 3000);
+        }
+
+        function loadMechanics() {
+            fetch('/api/mechanics')
+                .then(response => response.json())
+                .then(mechanics => {
+                    currentMechanics = mechanics;
+                    const tbody = document.getElementById('mechanicsTableBody');
+                    tbody.innerHTML = '';
+                    mechanics.forEach(mechanic => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${mechanic.noAVS || '-'}</td>
+                            <td>${mechanic.nom || '-'}</td>
+                            <td>${mechanic.prenom || '-'}</td>
+                            <td>${formatDate(mechanic.dateNaissance)}</td>
+                            <td>${mechanic.sexe || '-'}</td>
+                            <td>${formatAddress(mechanic.lieu)}</td>
+                            <td>${formatMoney(mechanic.salaire)}</td>
+                            <td>${mechanic.poste || '-'}</td>
+                            <td>${formatDate(mechanic.dateDebutContrat)}</td>
+                            <td>${formatDate(mechanic.dateFinContrat)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="showEditModal(${mechanic.noAVS})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger me-1" onclick="deleteMechanic(${mechanic.noAVS})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showAlert('Erreur lors du chargement des données', 'danger');
+                });
+        }
+
+        function createMechanic() {
+            // Validation des champs obligatoires
+            const requiredFields = ['noAVS', 'nom', 'prenom', 'dateNaissance', 'sexe', 'salaire', 'poste', 'dateDebutContrat', 'lieuId'];
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    showAlert(`Le champ ${field} est obligatoire`, 'danger');
+                    element.focus();
+                    return;
+                }
+            }
+
+            // Validation du salaire
+            const salaire = parseFloat(document.getElementById('salaire').value);
+            if (salaire <= 0) {
+                showAlert('Le salaire doit être supérieur à 0', 'danger');
+                document.getElementById('salaire').focus();
+                return;
+            }
+
+            // Validation des dates
+            const dateDebut = new Date(document.getElementById('dateDebutContrat').value);
+            const dateFin = document.getElementById('dateFinContrat').value ? new Date(document.getElementById('dateFinContrat').value) : null;
+            if (dateFin && dateDebut >= dateFin) {
+                showAlert('La date de fin doit être postérieure à la date de début', 'danger');
+                return;
+            }
+
+            // Récupération du lieu sélectionné
+            const lieuId = parseInt(document.getElementById('lieuId').value);
+            if (!lieuId) {
+                showAlert('Veuillez sélectionner une adresse valide', 'danger');
+                return;
+            }
+
+            const mechanic = {
+                noAVS: document.getElementById('noAVS').value,
+                nom: document.getElementById('nom').value.trim(),
+                prenom: document.getElementById('prenom').value.trim(),
+                dateNaissance: document.getElementById('dateNaissance').value,
+                sexe: document.getElementById('sexe').value,
+                salaire: salaire,
+                poste: document.getElementById('poste').value.trim(),
+                dateDebutContrat: document.getElementById('dateDebutContrat').value,
+                dateFinContrat: document.getElementById('dateFinContrat').value || null,
+                lieu: {
+                    id: lieuId
+                }
+            };
+
+            fetch('/api/mechanics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mechanic)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Erreur lors de la création du mécanicien');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                showAlert('Mécanicien créé avec succès', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('addMechanicModal')).hide();
+                document.getElementById('addMechanicForm').reset();
+                loadMechanics();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert(error.message || 'Erreur lors de la création du mécanicien', 'danger');
+            });
+        }
+
+        function showEditModal(noAVS) {
+            const mechanic = currentMechanics.find(m => m.noAVS === noAVS);
+            if (mechanic) {
+                document.getElementById('editNoAVS').value = mechanic.noAVS;
+                document.getElementById('editNom').value = mechanic.nom;
+                document.getElementById('editPrenom').value = mechanic.prenom;
+                document.getElementById('editDateNaissance').value = mechanic.dateNaissance;
+                document.getElementById('editSexe').value = mechanic.sexe;
+                document.getElementById('editSalaire').value = mechanic.salaire;
+                document.getElementById('editPoste').value = mechanic.poste;
+                document.getElementById('editDateDebutContrat').value = mechanic.dateDebutContrat;
+                document.getElementById('editDateFinContrat').value = mechanic.dateFinContrat || '';
+                
+                // Sélectionner le lieu dans la liste déroulante
+                const editLieuSelect = document.getElementById('editLieuId');
+                if (mechanic.lieu && mechanic.lieu.id) {
+                    editLieuSelect.value = mechanic.lieu.id;
+                }
+
+                const editModal = new bootstrap.Modal(document.getElementById('editMechanicModal'));
+                editModal.show();
+            }
+        }
+
+        function updateMechanic() {
+            const noAVS = document.getElementById('editNoAVS').value;
+            
+            // Validation des champs obligatoires
+            const requiredFields = ['editNom', 'editPrenom', 'editDateNaissance', 'editSexe', 'editSalaire', 'editPoste', 'editDateDebutContrat', 'editLieuId'];
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    showAlert(`Le champ ${field.replace('edit', '')} est obligatoire`, 'danger');
+                    element.focus();
+                    return;
+                }
+            }
+
+            // Validation du salaire
+            const salaire = parseFloat(document.getElementById('editSalaire').value);
+            if (salaire <= 0) {
+                showAlert('Le salaire doit être supérieur à 0', 'danger');
+                document.getElementById('editSalaire').focus();
+                return;
+            }
+
+            // Validation des dates
+            const dateDebut = new Date(document.getElementById('editDateDebutContrat').value);
+            const dateFin = document.getElementById('editDateFinContrat').value ? new Date(document.getElementById('editDateFinContrat').value) : null;
+            if (dateFin && dateDebut >= dateFin) {
+                showAlert('La date de fin doit être postérieure à la date de début', 'danger');
+                return;
+            }
+
+            // Récupération du lieu sélectionné
+            const lieuId = parseInt(document.getElementById('editLieuId').value);
+            if (!lieuId) {
+                showAlert('Veuillez sélectionner une adresse valide', 'danger');
+                return;
+            }
+
+            const mechanic = {
+                noAVS: noAVS,
+                nom: document.getElementById('editNom').value.trim(),
+                prenom: document.getElementById('editPrenom').value.trim(),
+                dateNaissance: document.getElementById('editDateNaissance').value,
+                sexe: document.getElementById('editSexe').value,
+                salaire: salaire,
+                poste: document.getElementById('editPoste').value.trim(),
+                dateDebutContrat: document.getElementById('editDateDebutContrat').value,
+                dateFinContrat: document.getElementById('editDateFinContrat').value || null,
+                lieu: {
+                    id: lieuId
+                }
+            };
+
+            fetch(`/api/mechanics/${noAVS}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mechanic)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Erreur lors de la modification du mécanicien');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                showAlert('Mécanicien modifié avec succès', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('editMechanicModal')).hide();
+                loadMechanics();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert(error.message || 'Erreur lors de la modification du mécanicien', 'danger');
+            });
+        }
+
+        function deleteMechanic(noAVS) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce mécanicien ?')) {
+                fetch(`/api/mechanics/${noAVS}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        showAlert('Mécanicien supprimé avec succès!');
+                        loadMechanics();
+                    } else {
+                        showAlert('Erreur lors de la suppression du mécanicien.');
+                    }
+                });
+            }
+        }
+
+        // Chargement initial des lieux et des mécaniciens
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLieux();
+            loadMechanics();
+        });
+    </script>
+</body>
+</html>

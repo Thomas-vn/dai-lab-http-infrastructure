@@ -4,6 +4,8 @@ import com.yourcompany.garage.garageapi.entity.Client;
 import com.yourcompany.garage.garageapi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +17,10 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
+    }
+
     // Create a new Client
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
@@ -25,8 +31,13 @@ public class ClientController {
     // Get all Clients
     @GetMapping
     public ResponseEntity<List<Client>> getAllClients() {
-        List<Client> clients = clientService.getAllClients();
-        return ResponseEntity.ok(clients);
+        try {
+            List<Client> clients = clientService.getAllClients();
+            return ResponseEntity.ok(clients);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     // Get a Client by NoAVS

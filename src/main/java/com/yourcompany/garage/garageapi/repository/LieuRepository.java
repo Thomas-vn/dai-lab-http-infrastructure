@@ -49,6 +49,10 @@ public interface LieuRepository extends JpaRepository<Lieu, Integer> {
     @Query("SELECT l FROM Lieu l ORDER BY l.rue ASC")
     List<Lieu> findAllOrderByRue();
 
+    // Find Lieu by ID
+    @Query("SELECT l FROM Lieu l WHERE l.id = :id")
+    Optional<Lieu> findById(@Param("id") Integer id);
+
     // --INSERTUION --
 
     @Modifying

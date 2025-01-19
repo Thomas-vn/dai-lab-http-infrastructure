@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LieuServiceImpl implements LieuService {
@@ -20,6 +21,11 @@ public class LieuServiceImpl implements LieuService {
     @Override
     public List<Lieu> getAllLieu() {
         return lieuRepository.findAll();
+    }
+
+    @Override
+    public Optional<Lieu> getLieuById(Integer id) {
+        return lieuRepository.findById(id);
     }
 
     @Override
