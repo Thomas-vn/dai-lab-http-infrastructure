@@ -21,7 +21,7 @@
           <!-- Service ID -->
           <div class="col-md-6 mb-3">
             <label for="serviceID" class="form-label">Service ID</label>
-            <input type="number" class="form-control" id="serviceID" name="serviceID" required>
+            <input type="number" class="form-control" id="searchServiceID" placeholder="Enter Service ID" required>
           </div>
           <!-- Commentaire -->
           <div class="col-md-6 mb-3">
@@ -50,7 +50,7 @@
           <!-- Type Service ID -->
           <div class="col-md-6 mb-3">
             <label for="typeserviceid" class="form-label">Type of Service</label>
-            <input type="number" class="form-control" id="typeserviceid" name="typeserviceid" required>
+            <select class="form-select" id="typeserviceid" name="typeserviceid" required></select>
           </div>
         </div>
         <button type="submit" class="btn btn-success w-100">Add Service</button>
@@ -130,6 +130,7 @@
     const mechanicsDropdown = document.getElementById("noAVSMecanicien");
     const reparationsDropdown = document.getElementById("reparationID");
     const mechanicSearchDropdown = document.getElementById("mechanicSearchDropdown");
+    const typeServiceDropdown = document.getElementById("typeserviceid");
 
     // Fetch mechanics
     const mechanics = await fetch(mechanicsEndpoint).then(res => res.json());
@@ -151,6 +152,15 @@
       option.value = reparation.reparationID; // ID as value
       option.textContent = `${reparation.reparationID} - ${reparation.numeroChassis}`; // Display ID and chassis
       reparationsDropdown.appendChild(option);
+    });
+
+    // Fetch type services
+    const typeServices = await fetch('/api/type-services').then(res => res.json());
+    typeServices.forEach(typeService => {
+      const option = document.createElement("option");
+      option.value = typeService.typeServiceId; // ID as value
+      option.textContent = `${typeService.typeServiceId} - ${typeService.description}`; // Display ID and description
+      typeServiceDropdown.appendChild(option);
     });
   }
 
@@ -197,7 +207,7 @@
       heuresDeTravail: document.getElementById("heuresDeTravail").value,
       reparationID: document.getElementById("reparationID").value,
       noAVSMecanicien: document.getElementById("noAVSMecanicien").value,
-      typeserviceid: document.getElementById("typeserviceid").value,
+      typeserviceid: document.getElementById("typeserviceid").value, // Ensure this is correctly fetched
     };
 
     await fetch(servicesEndpoint, {
@@ -214,43 +224,46 @@
   document.getElementById("searchForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const serviceID = document.getElementById("serviceID").value;
-    const result = await fetch(`${servicesEndpoint}/${serviceID}`).then(res => res.json());
+    const serviceID = document.getElementById("searchServiceID").value;
     const searchResultDiv = document.getElementById("searchResult");
 
-    if (result.serviceID) {
-      const mechanics = await fetch(mechanicsEndpoint).then(res => res.json());
-      const mechanicsMap = Object.fromEntries(
-              mechanics.map(mechanic => [mechanic.noAVS, `${mechanic.prenom} ${mechanic.nom}`])
-      );
-      const mechanicName = mechanicsMap[result.noAVSMecanicien] || "Unknown Mechanic";
+    try {
+      const response = await fetch(`${servicesEndpoint}/${serviceID}`);
+      console.log(`Fetching: ${servicesEndpoint}/${serviceID}`);
+      if (!response.ok) {
+        searchResultDiv.innerHTML = "<p class='text-danger'>Service not found!</p>";
+        return;
+      }
+      const result = await response.json();
 
+      // Display the result in a table
       searchResultDiv.innerHTML = `
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Service ID</th>
-                            <th>Commentaire</th>
-                            <th>Heures de Travail</th>
-                            <th>Reparation ID</th>
-                            <th>Mechanic Name</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${result.serviceID}</td>
-                            <td>${result.commentaire}</td>
-                            <td>${result.heuresDeTravail}</td>
-                            <td>${result.reparationID}</td>
-                            <td>${mechanicName}</td>
-                            <td>${result.description}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `;
-    } else {
-      searchResultDiv.innerHTML = "<p class='text-danger'>Service not found!</p>";
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Service ID</th>
+                        <th>Commentaire</th>
+                        <th>Heures de Travail</th>
+                        <th>Reparation ID</th>
+                        <th>Mechanic Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${result.serviceID}</td>
+                        <td>${result.commentaire}</td>
+                        <td>${result.heuresDeTravail}</td>
+                        <td>${result.reparationID}</td>
+                        <td>${result.noAVSMecanicien}</td>
+                        <td>${result.description}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    } catch (error) {
+      console.error("Error fetching service:", error);
+      searchResultDiv.innerHTML = "<p class='text-danger'>An error occurred while fetching the service. Please try again later.</p>";
     }
   });
 
