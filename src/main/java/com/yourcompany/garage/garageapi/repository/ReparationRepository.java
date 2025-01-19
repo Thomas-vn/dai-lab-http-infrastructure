@@ -48,18 +48,6 @@ public interface ReparationRepository extends JpaRepository<Reparation, Integer>
             "        where v.numerochassis = :numeroChassis", nativeQuery = true)
     List<Object[]> findByNumeroChassisCustom(String numeroChassis);
 
-    @Query(value = "select r.reparationid,\n" +
-            "       r.prix,\n" +
-            "       r.datedebut,\n" +
-            "       r.datefin,\n" +
-            "       v.numerochassis,\n" +
-            "       l.ville\n" +
-            "        from reparation r\n" +
-            "        join Voiture v using(numerochassis)\n" +
-            "        join lieu l on r.lieuid = l.id\n" +
-            "        where r.mechanicienid = :mechanicienID", nativeQuery = true)
-    List<Object[]> findByMechanicienCustom(Integer mechanicienID);
-
 
     @Query(value = "INSERT INTO reparation " +
             "VALUES (:reparationID, :prix, :dateDebut, :dateFin, :numeroChassis, :lieu)",

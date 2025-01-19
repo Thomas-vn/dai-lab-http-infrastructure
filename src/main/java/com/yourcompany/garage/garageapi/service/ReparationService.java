@@ -13,7 +13,6 @@ public interface ReparationService {
     // CRUD Operations
     List<ReparationDTO> getAllReparations();
     List<ReparationDTO> getReparationByNumeroChassis(String numeroChassis);
-    List<ReparationDTO> getReparationByMechanicien(Integer mechanicienID);
 
     ReparationDTO getReparationById(Integer reparationID);
     Reparation createReparation(ReparationDTOSecond reparation);

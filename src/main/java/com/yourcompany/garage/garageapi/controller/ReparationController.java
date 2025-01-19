@@ -56,12 +56,6 @@ public class ReparationController {
         return reparationService.getReparationByNumeroChassis(numeroChassis);
     }
 
-    @GetMapping("/mechanicien/{mechanicienID}")
-    public List<ReparationDTO> getReparationByMechanicien(@PathVariable("mechanicienID") int mechanicienID)
-            throws ResourceNotFoundException {
-        return reparationService.getReparationByMechanicien(mechanicienID);
-    }
-
     /**
      * Create a New Reparation
      * POST /api/reparations

@@ -40,6 +40,7 @@ public class ReparationServiceImpl implements ReparationService {
                 ))
                 .collect(Collectors.toList());
     }
+
     @Override
     public ReparationDTO getReparationById(Integer reparationID) {
         List<Object[]> results = reparationRepository.findByIdCustom(reparationID);
@@ -58,21 +59,6 @@ public class ReparationServiceImpl implements ReparationService {
     @Override
     public List<ReparationDTO> getReparationByNumeroChassis(String numeroChassis) {
         List<Object[]> rawResults = reparationRepository.findByNumeroChassisCustom(numeroChassis);
-        return rawResults.stream()
-                .map(row -> new ReparationDTO(
-                        (Integer) row[0],                           // reparationid
-                        (BigDecimal) row[1],                        // prix
-                        convertToLocalDate(row[2]),                 // datedebut
-                        row[3] != null ? convertToLocalDate(row[3]) : null, // datefin
-                        (String) row[4],                            // numerochassis
-                        (String) row[5]                             // ville
-                ))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ReparationDTO> getReparationByMechanicien(Integer mechanicienID){
-        List<Object[]> rawResults = reparationRepository.findByMechanicienCustom(mechanicienID);
         return rawResults.stream()
                 .map(row -> new ReparationDTO(
                         (Integer) row[0],                           // reparationid
