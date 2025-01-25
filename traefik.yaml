@@ -1,0 +1,23 @@
+# Define entrypoints for HTTP and HTTPS
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+# Enable the Docker provider
+providers:
+  docker:
+    exposedByDefault: false
+
+# Define the certificates resolver using the self-signed certificate
+tls:
+  certificates:
+    - certFile: /etc/traefik/certificates/traefik.crt
+      keyFile: /etc/traefik/certificates/traefik.key
+
+# Enable the Traefik dashboard with HTTPS
+api:
+  insecure: false
+  dashboard: true
+  entryPoint: websecure

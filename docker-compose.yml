@@ -1,4 +1,9 @@
+version: "3.8"
+
 services:
+  #################################################################
+  # 1) PostgreSQL Database
+  #################################################################
   bdr-postgresql:
     image: bitnami/postgresql:17
     container_name: bdr_postgres
@@ -18,36 +23,93 @@ services:
     networks:
       - garage-network
 
+  #################################################################
+  # 2) Traefik Reverse Proxy
+  #################################################################
+  reverse_proxy:
+    image: traefik:v2.9  # Specify a stable version
+    container_name: traefik
+    command:
+      - "--configFile=/etc/traefik/traefik.yaml"  # Use the external config file
+    ports:
+      - "80:80"       # HTTP
+      - "443:443"     # HTTPS
+      - "8080:8080"   # Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"  # Docker provider
+      - "./traefik.yaml:/etc/traefik/traefik.yaml:ro"  # Traefik config
+      - "./certs:/etc/traefik/certificates:ro"          # Certificates
+    networks:
+      - garage-network
+
+  #################################################################
+  # 3) Nginx for Static Files
+  #################################################################
   nginx-static:
     build:
       context: ./src/main/resources
       dockerfile: ./Dockerfile
-    ports:
-      - "80:80"
     volumes:
-      - ./src/main/resources/static:/usr/share/nginx/html
+      - ./src/main/resources/static:/usr/share/nginx/html:ro
       - ./src/main/resources/nginx.conf:/etc/nginx/nginx.conf:ro
+    expose:
+      - "80"
     restart: unless-stopped
     networks:
       - garage-network
+    labels:
+      - "traefik.enable=true"
+      # Route: Host-based routing for the static site with HTTPS
+      - "traefik.http.routers.static.rule=Host(`localhost`)"
+      - "traefik.http.routers.static.entrypoints=websecure"
+      - "traefik.http.routers.static.tls=true"
+      # Define the service port
+      - "traefik.http.services.static.loadbalancer.server.port=80"
 
+  #################################################################
+  # 4) Spring Boot App
+  #################################################################
   spring-app:
     build: .
-    ports:
-      - "8080:8080"
     depends_on:
       bdr-postgresql:
         condition: service_healthy
+    expose:
+      - "8080"
     networks:
       - garage-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://bdr-postgresql:5432/bdr
       SPRING_DATASOURCE_USERNAME: bdr
       SPRING_DATASOURCE_PASSWORD: bdr
+    labels:
+      - "traefik.enable=true"
+      # Path-based routing for dynamic requests => /api => spring-app with HTTPS
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+      # Sticky sessions
+      - "traefik.http.services.api.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.api.loadbalancer.sticky.cookie.name=MyStickyCookie"
+
+  #################################################################
+  # 5) Portainer (Optional)
+  #################################################################
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Access Docker API
+      - "portainer_data:/data"                       # Persist data
+    networks:
+      - garage-network
 
 volumes:
+  portainer_data:
   postgres_data:
-    driver: local
 
 networks:
   garage-network:
