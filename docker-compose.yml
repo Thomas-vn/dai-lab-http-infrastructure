@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   #################################################################
   # 1) PostgreSQL Database
@@ -27,18 +25,19 @@ services:
   # 2) Traefik Reverse Proxy
   #################################################################
   reverse_proxy:
-    image: traefik:v2.9  # Specify a stable version
+    image: traefik:v2.9
     container_name: traefik
     command:
-      - "--configFile=/etc/traefik/traefik.yaml"  # Use the external config file
+      - "--configFile=/etc/traefik/traefik.yaml"
     ports:
-      - "80:80"       # HTTP
-      - "443:443"     # HTTPS
-      - "8080:8080"   # Traefik dashboard
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"  # Docker provider
-      - "./traefik.yaml:/etc/traefik/traefik.yaml:ro"  # Traefik config
-      - "./certs:/etc/traefik/certificates:ro"          # Certificates
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.yaml:/etc/traefik/traefik.yaml:ro"
+      - "./certs:/etc/traefik/certificates:ro"
+      - "./auth:/etc/traefik/auth:ro"  # Mount the auth directory
     networks:
       - garage-network
 
