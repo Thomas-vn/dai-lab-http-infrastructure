@@ -1,4 +1,5 @@
 services:
+  #Run the Database with Postgresql
   bdr-postgresql:
     image: bitnami/postgresql:17
     container_name: bdr_postgres
@@ -18,38 +19,90 @@ services:
     networks:
       - garage-network
 
+  #Run the Reverse Proxy with Traefik
+  reverse_proxy:
+    image: traefik:v2.10
+    container_name: reverse_proxy
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"     #numéro de port HTTP
+      - "443:443"   #numéro de port HTTPS
+      - "8080:8080" #numéro de port Traefik Dashboard 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - garage-network
+
+  #Run the Static Web server with Nginx
   nginx-static:
     build:
       context: ./src/main/resources
       dockerfile: ./Dockerfile
-    ports:
-      - "80:80"
-    volumes:
-      - ./src/main/resources/static:/usr/share/nginx/html
-      - ./src/main/resources/nginx.conf:/etc/nginx/nginx.conf:ro
-    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 3
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.static.rule=Host(`localhost`)"
+      - "traefik.http.services.static.loadbalancer.server.port=80"
+      - "traefik.http.routers.static.entrypoints=web"
+      # Explicitly disable sticky sessions for static content (round-robin)
+      - "traefik.http.services.static.loadbalancer.sticky=false"
     networks:
       - garage-network
 
+  #Run the Spring-boot application
   spring-app:
     build: .
-    ports:
-      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 3
+    expose:
+      - "8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api.entrypoints=web"
+      # Enable sticky sessions for the API
+      - "traefik.http.services.api.loadbalancer.sticky=true"
+      - "traefik.http.services.api.loadbalancer.sticky.cookie.name=spring_session"
+      - "traefik.http.services.api.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.api.loadbalancer.sticky.cookie.httpOnly=true"
+    networks:
+      - garage-network
     depends_on:
       bdr-postgresql:
         condition: service_healthy
-    networks:
-      - garage-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://bdr-postgresql:5432/bdr
       SPRING_DATASOURCE_USERNAME: bdr
       SPRING_DATASOURCE_PASSWORD: bdr
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"  # Web UI port
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Allow access to Docker API
+      - "portainer_data:/data"  # Store Portainer data persistently
+    networks:
+      - garage-network
+
 volumes:
   postgres_data:
+    driver: local
+  portainer_data:
     driver: local
 
 networks:
   garage-network:
     driver: bridge
-    name: garage-network
