@@ -210,18 +210,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Initialize arrays to store mechanics and places data
         let currentMechanics = [];
         let allLieux = [];
 
-        // Fonction pour charger les lieux
+        // Function to load places from the API and populate the select elements for address
         function loadLieux() {
-            fetch('/api/lieu')
-                .then(response => response.json())
+            fetch('/api/lieu') // Fetch data for places
+                .then(response => response.json()) // Parse the response as JSON
                 .then(data => {
-                    allLieux = data;
+                    allLieux = data; // Store the place data
                     const lieuSelect = document.getElementById('lieuId');
                     lieuSelect.innerHTML = '<option value="">Sélectionnez une adresse</option>';
                     data.forEach(lieu => {
+                        // Create and append each option for the place selection
                         const option = document.createElement('option');
                         option.value = lieu.id;
                         option.textContent = `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
@@ -237,17 +239,19 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Erreur lors du chargement des lieux:', error);
-                    showAlert('Erreur lors du chargement des adresses', 'danger');
+                    console.error('Erreur lors du chargement des lieux:', error); // Log error if loading fails
+                    showAlert('Erreur lors du chargement des adresses', 'danger'); // Show error alert
                 });
         }
 
+        // Function to format a date in Swiss format
         function formatDate(dateString) {
             if (!dateString) return '-';
             const date = new Date(dateString);
             return date.toLocaleDateString('fr-CH');
         }
 
+        // Function to format salary in CHF currency format
         function formatMoney(amount) {
             if (!amount) return '-';
             return new Intl.NumberFormat('fr-CH', {
@@ -256,59 +260,64 @@
             }).format(amount);
         }
 
+        // Function to format the address of a place
         function formatAddress(lieu) {
             if (!lieu) return '-';
             return `${lieu.rue} ${lieu.numero}, ${lieu.npa} ${lieu.ville}`;
         }
 
+        // Function to show alert messages
         function showAlert(message, type) {
             const alert = document.getElementById('alertMessage');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            alert.classList.remove('d-none');
-            setTimeout(() => alert.classList.add('d-none'), 3000);
+            alert.className = `alert alert-${type}`; // Set alert type (success, danger, etc.)
+            alert.textContent = message; // Set the alert message
+            alert.classList.remove('d-none'); // Display the alert
+            setTimeout(() => alert.classList.add('d-none'), 3000); // Hide after 3 seconds
         }
 
+        // Function to load the mechanics from the API and display them in a table
         function loadMechanics() {
-            fetch('/api/mechanics')
-                .then(response => response.json())
+            fetch('/api/mechanics') // Fetch mechanics data
+                .then(response => response.json()) // Parse the response as JSON
                 .then(mechanics => {
-                    currentMechanics = mechanics;
+                    currentMechanics = mechanics; // Store mechanics data
                     const tbody = document.getElementById('mechanicsTableBody');
-                    tbody.innerHTML = '';
+                    tbody.innerHTML = ''; // Clear the table body
                     mechanics.forEach(mechanic => {
+                        // Create and append each row for the mechanic
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${mechanic.noAVS || '-'}</td>
-                            <td>${mechanic.nom || '-'}</td>
-                            <td>${mechanic.prenom || '-'}</td>
-                            <td>${formatDate(mechanic.dateNaissance)}</td>
-                            <td>${mechanic.sexe || '-'}</td>
-                            <td>${formatAddress(mechanic.lieu)}</td>
-                            <td>${formatMoney(mechanic.salaire)}</td>
-                            <td>${mechanic.poste || '-'}</td>
-                            <td>${formatDate(mechanic.dateDebutContrat)}</td>
-                            <td>${formatDate(mechanic.dateFinContrat)}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary me-1" onclick="showEditModal(${mechanic.noAVS})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger me-1" onclick="deleteMechanic(${mechanic.noAVS})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
+                    <td>${mechanic.noAVS || '-'}</td>
+                    <td>${mechanic.nom || '-'}</td>
+                    <td>${mechanic.prenom || '-'}</td>
+                    <td>${formatDate(mechanic.dateNaissance)}</td>
+                    <td>${mechanic.sexe || '-'}</td>
+                    <td>${formatAddress(mechanic.lieu)}</td>
+                    <td>${formatMoney(mechanic.salaire)}</td>
+                    <td>${mechanic.poste || '-'}</td>
+                    <td>${formatDate(mechanic.dateDebutContrat)}</td>
+                    <td>${formatDate(mechanic.dateFinContrat)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" onclick="showEditModal(${mechanic.noAVS})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger me-1" onclick="deleteMechanic(${mechanic.noAVS})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
                         tbody.appendChild(row);
                     });
                 })
                 .catch(error => {
-                    console.error('Erreur:', error);
-                    showAlert('Erreur lors du chargement des données', 'danger');
+                    console.error('Erreur:', error); // Log error if loading fails
+                    showAlert('Erreur lors du chargement des données', 'danger'); // Show error alert
                 });
         }
 
+        // Function to create a new mechanic with validation
         function createMechanic() {
-            // Validation des champs obligatoires
+            // Validate required fields
             const requiredFields = ['noAVS', 'nom', 'prenom', 'dateNaissance', 'sexe', 'salaire', 'poste', 'dateDebutContrat', 'lieuId'];
             for (const field of requiredFields) {
                 const element = document.getElementById(field);
@@ -319,7 +328,7 @@
                 }
             }
 
-            // Validation du salaire
+            // Validate salary
             const salaire = parseFloat(document.getElementById('salaire').value);
             if (salaire <= 0) {
                 showAlert('Le salaire doit être supérieur à 0', 'danger');
@@ -327,7 +336,7 @@
                 return;
             }
 
-            // Validation des dates
+            // Validate contract dates
             const dateDebut = new Date(document.getElementById('dateDebutContrat').value);
             const dateFin = document.getElementById('dateFinContrat').value ? new Date(document.getElementById('dateFinContrat').value) : null;
             if (dateFin && dateDebut >= dateFin) {
@@ -335,7 +344,7 @@
                 return;
             }
 
-            // Récupération du lieu sélectionné
+            // Get the selected place ID
             const lieuId = parseInt(document.getElementById('lieuId').value);
             if (!lieuId) {
                 showAlert('Veuillez sélectionner une adresse valide', 'danger');
@@ -357,6 +366,7 @@
                 }
             };
 
+            // Create the mechanic via the API
             fetch('/api/mechanics', {
                 method: 'POST',
                 headers: {
@@ -364,26 +374,27 @@
                 },
                 body: JSON.stringify(mechanic)
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || 'Erreur lors de la création du mécanicien');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                showAlert('Mécanicien créé avec succès', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('addMechanicModal')).hide();
-                document.getElementById('addMechanicForm').reset();
-                loadMechanics();
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showAlert(error.message || 'Erreur lors de la création du mécanicien', 'danger');
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || 'Erreur lors de la création du mécanicien');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showAlert('Mécanicien créé avec succès', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('addMechanicModal')).hide();
+                    document.getElementById('addMechanicForm').reset();
+                    loadMechanics();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showAlert(error.message || 'Erreur lors de la création du mécanicien', 'danger');
+                });
         }
 
+        // Function to show the edit modal with pre-filled data for a mechanic
         function showEditModal(noAVS) {
             const mechanic = currentMechanics.find(m => m.noAVS === noAVS);
             if (mechanic) {
@@ -396,8 +407,8 @@
                 document.getElementById('editPoste').value = mechanic.poste;
                 document.getElementById('editDateDebutContrat').value = mechanic.dateDebutContrat;
                 document.getElementById('editDateFinContrat').value = mechanic.dateFinContrat || '';
-                
-                // Sélectionner le lieu dans la liste déroulante
+
+                // Select the place in the dropdown
                 const editLieuSelect = document.getElementById('editLieuId');
                 if (mechanic.lieu && mechanic.lieu.id) {
                     editLieuSelect.value = mechanic.lieu.id;
@@ -408,10 +419,11 @@
             }
         }
 
+        // Function to update the mechanic with new data
         function updateMechanic() {
             const noAVS = document.getElementById('editNoAVS').value;
-            
-            // Validation des champs obligatoires
+
+            // Validate required fields
             const requiredFields = ['editNom', 'editPrenom', 'editDateNaissance', 'editSexe', 'editSalaire', 'editPoste', 'editDateDebutContrat', 'editLieuId'];
             for (const field of requiredFields) {
                 const element = document.getElementById(field);
@@ -422,7 +434,7 @@
                 }
             }
 
-            // Validation du salaire
+            // Validate salary and contract dates
             const salaire = parseFloat(document.getElementById('editSalaire').value);
             if (salaire <= 0) {
                 showAlert('Le salaire doit être supérieur à 0', 'danger');
@@ -430,7 +442,6 @@
                 return;
             }
 
-            // Validation des dates
             const dateDebut = new Date(document.getElementById('editDateDebutContrat').value);
             const dateFin = document.getElementById('editDateFinContrat').value ? new Date(document.getElementById('editDateFinContrat').value) : null;
             if (dateFin && dateDebut >= dateFin) {
@@ -438,7 +449,7 @@
                 return;
             }
 
-            // Récupération du lieu sélectionné
+            // Get the selected place ID
             const lieuId = parseInt(document.getElementById('editLieuId').value);
             if (!lieuId) {
                 showAlert('Veuillez sélectionner une adresse valide', 'danger');
@@ -460,6 +471,7 @@
                 }
             };
 
+            // Update the mechanic via the API
             fetch(`/api/mechanics/${noAVS}`, {
                 method: 'PUT',
                 headers: {
@@ -467,45 +479,46 @@
                 },
                 body: JSON.stringify(mechanic)
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || 'Erreur lors de la modification du mécanicien');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                showAlert('Mécanicien modifié avec succès', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('editMechanicModal')).hide();
-                loadMechanics();
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showAlert(error.message || 'Erreur lors de la modification du mécanicien', 'danger');
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || 'Erreur lors de la modification du mécanicien');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showAlert('Mécanicien modifié avec succès', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('editMechanicModal')).hide();
+                    loadMechanics();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showAlert(error.message || 'Erreur lors de la modification du mécanicien', 'danger');
+                });
         }
 
+        // Function to delete a mechanic
         function deleteMechanic(noAVS) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce mécanicien ?')) {
                 fetch(`/api/mechanics/${noAVS}`, {
                     method: 'DELETE',
                 })
-                .then(response => {
-                    if (response.ok) {
-                        showAlert('Mécanicien supprimé avec succès!');
-                        loadMechanics();
-                    } else {
-                        showAlert('Erreur lors de la suppression du mécanicien.');
-                    }
-                });
+                    .then(response => {
+                        if (response.ok) {
+                            showAlert('Mécanicien supprimé avec succès!');
+                            loadMechanics(); // Reload the list of mechanics
+                        } else {
+                            showAlert('Erreur lors de la suppression du mécanicien.');
+                        }
+                    });
             }
         }
 
-        // Chargement initial des lieux et des mécaniciens
+        // Initialize by loading the places and mechanics when the page is ready
         document.addEventListener('DOMContentLoaded', () => {
-            loadLieux();
-            loadMechanics();
+            loadLieux(); // Load places
+            loadMechanics(); // Load mechanics
         });
     </script>
 </body>

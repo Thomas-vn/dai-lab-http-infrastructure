@@ -160,7 +160,7 @@ Because of the merge with the BDR project, this step was mandatory for us.
 We have added a JavaScript code to the static Web page to use all CRUD operations. Not only the GET request.
 The functions work, and function as expected when tested with Insomnia.
 In theory we have even more functioning CRUD controllers, and web functional web pages. But because of lack of time with the exams, we have not fully implemented them.
-The code of those unfinished controllers is still available in the project, and the code is commented and documented.
+The html code is documented with comments.
 
 ### Acceptance criteria
 

@@ -109,74 +109,80 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  // Wait until the document is fully loaded
   document.addEventListener('DOMContentLoaded', function() {
-    // Load all cars on page load
+    // Load all cars when the page loads
     fetchCars();
 
-    // Handle Search by Marque
+    // Handle Search by Marque when the search form is submitted
     document.getElementById('searchByMarqueForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      fetchCars();
+      event.preventDefault(); // Prevent the default form submission
+      fetchCars(); // Fetch cars based on the marque search input
     });
 
+    // Function to fetch car data from the API
     function fetchCars() {
-      const marque = document.getElementById('marque').value.trim();
-      const url = marque ? `/api/voitures/marque/${encodeURIComponent(marque)}` : '/api/voitures';
+      const marque = document.getElementById('marque').value.trim(); // Get the marque input value
+      const url = marque ? `/api/voitures/marque/${encodeURIComponent(marque)}` : '/api/voitures'; // Build the URL based on the marque value
 
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => displayResults(data))
-        .catch(error => handleError(error));
+      fetch(url) // Make the API request
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok'); // Handle network errors
+                }
+                return response.json(); // Parse the JSON response
+              })
+              .then(data => displayResults(data)) // If successful, display the car results
+              .catch(error => handleError(error)); // If there's an error, handle it
     }
 
+    // Function to display the fetched car data in the table
     function displayResults(voitures) {
-      const tbody = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
-      tbody.innerHTML = ''; // Clear previous results
+      const tbody = document.getElementById('resultsTable').getElementsByTagName('tbody')[0]; // Get the table body
+      tbody.innerHTML = ''; // Clear any previous results
 
+      // If no cars are found or the response is not an array, display a message
       if (!Array.isArray(voitures) || voitures.length === 0) {
-        const row = tbody.insertRow();
-        const cell = row.insertCell(0);
-        cell.colSpan = 20;
-        cell.className = 'text-center';
-        cell.textContent = 'No results found.';
+        const row = tbody.insertRow(); // Create a new table row
+        const cell = row.insertCell(0); // Create a new cell in the row
+        cell.colSpan = 20; // Make the cell span all columns
+        cell.className = 'text-center'; // Center align the text
+        cell.textContent = 'No results found.'; // Display a "No results" message
         return;
       }
 
+      // For each car, add a new row to the table with the car's details
       voitures.forEach(voiture => {
-        const row = tbody.insertRow();
+        const row = tbody.insertRow(); // Create a new row for each car
         row.innerHTML = `
-          <td>${voiture.numeroChassis || 'N/A'}</td>
-          <td>${voiture.marque || 'N/A'}</td>
-          <td>${voiture.typeCarrosserie || 'N/A'}</td>
-          <td>${voiture.couleur || 'N/A'}</td>
-          <td>${voiture.dateFabrication || 'N/A'}</td>
-          <td>${voiture.nombrePlaces || 'N/A'}</td>
-          <td>${voiture.prix ? voiture.prix.toFixed(2) : 'N/A'}</td>
-          <td>${voiture.nombrePortes || 'N/A'}</td>
-          <td>${voiture.puissance || 'N/A'}</td>
-          <td>${voiture.descriptionOptions || 'N/A'}</td>
-          <td>${voiture.dateExpertise || 'N/A'}</td>
-          <td>${voiture.typeCombustible || 'N/A'}</td>
-          <td>${voiture.nombreKm || 'N/A'}</td>
-          <td>${voiture.typeBoiteVitesse || 'N/A'}</td>
-          <td>${voiture.consommation ? voiture.consommation.toFixed(2) : 'N/A'}</td>
-          <td>${voiture.neuf ? 'Oui' : 'Non'}</td>
-          <td>${voiture.garantie ? 'Oui' : 'Non'}</td>
-          <td>${voiture.dateFinGarantie || 'N/A'}</td>
-          <td>${voiture.enVente ? 'Oui' : 'Non'}</td>
-          <td>${voiture.proprietaireNoAVS || 'N/A'}</td>
-        `;
+                <td>${voiture.numeroChassis || 'N/A'}</td>
+                <td>${voiture.marque || 'N/A'}</td>
+                <td>${voiture.typeCarrosserie || 'N/A'}</td>
+                <td>${voiture.couleur || 'N/A'}</td>
+                <td>${voiture.dateFabrication || 'N/A'}</td>
+                <td>${voiture.nombrePlaces || 'N/A'}</td>
+                <td>${voiture.prix ? voiture.prix.toFixed(2) : 'N/A'}</td>
+                <td>${voiture.nombrePortes || 'N/A'}</td>
+                <td>${voiture.puissance || 'N/A'}</td>
+                <td>${voiture.descriptionOptions || 'N/A'}</td>
+                <td>${voiture.dateExpertise || 'N/A'}</td>
+                <td>${voiture.typeCombustible || 'N/A'}</td>
+                <td>${voiture.nombreKm || 'N/A'}</td>
+                <td>${voiture.typeBoiteVitesse || 'N/A'}</td>
+                <td>${voiture.consommation ? voiture.consommation.toFixed(2) : 'N/A'}</td>
+                <td>${voiture.neuf ? 'Oui' : 'Non'}</td>
+                <td>${voiture.garantie ? 'Oui' : 'Non'}</td>
+                <td>${voiture.dateFinGarantie || 'N/A'}</td>
+                <td>${voiture.enVente ? 'Oui' : 'Non'}</td>
+                <td>${voiture.proprietaireNoAVS || 'N/A'}</td>
+            `;
       });
     }
 
+    // Function to handle errors in the fetch process
     function handleError(error) {
-      console.error('Error:', error);
-      alert('An error occurred while fetching data. Please try again.');
+      console.error('Error:', error); // Log the error to the console
+      alert('An error occurred while fetching data. Please try again.'); // Show an alert to the user
     }
   });
 </script>
