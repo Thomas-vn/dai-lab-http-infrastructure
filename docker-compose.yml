@@ -6,91 +6,99 @@ services:
     image: bitnami/postgresql:17
     container_name: bdr_postgres
     environment:
-      POSTGRESQL_USERNAME: bdr
-      POSTGRESQL_PASSWORD: bdr
-      POSTGRESQL_DATABASE: bdr
+      POSTGRESQL_USERNAME: bdr  # Username for PostgreSQL
+      POSTGRESQL_PASSWORD: bdr  # Password for PostgreSQL
+      POSTGRESQL_DATABASE: bdr  # Database name for PostgreSQL
     ports:
-      - "5432:5432"
+      - "5432:5432"  # Expose PostgreSQL on port 5432
     volumes:
-      - ./schema_sql/:/docker-entrypoint-initdb.d/
+      - ./schema_sql/:/docker-entrypoint-initdb.d/  # Initialize database with SQL scripts
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "bdr"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "pg_isready", "-U", "bdr"]  # Health check command for PostgreSQL
+      interval: 10s  # Interval between health checks
+      timeout: 5s  # Timeout for health check
+      retries: 5  # Number of retries for health check
     networks:
-      - garage-network
+      - garage-network  # Network for PostgreSQL
 
   #################################################################
   # 2) Traefik Reverse Proxy
   #################################################################
   reverse_proxy:
     image: traefik:v2.9
+    # Remove container_name to avoid potential DNS conflicts
     container_name: traefik
     command:
-      - "--configFile=/etc/traefik/traefik.yaml"
+      - "--configFile=/traefik.yaml"  # Configuration file for Traefik
+      # Redundant, but doesn't work without it >:(
+      - "--api.insecure=true"  # Enable insecure API
+      - "--providers.docker=true"  # Enable Docker provider
+      - "--providers.docker.exposedbydefault=false"  # Do not expose containers by default
+      - "--entrypoints.web.address=:80"  # HTTP entry point
+      - "--entrypoints.websecure.address=:443"  # HTTPS entry point
+      - "--entrypoints.dashboard.address=:8080"  # Dashboard entry point
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - "80:80"  # Expose HTTP on port 80
+      - "443:443"  # Expose HTTPS on port 443
+      - "8080:8080"  # Expose Traefik dashboard on port 8080
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik.yaml:/etc/traefik/traefik.yaml:ro"
-      - "./certs:/etc/traefik/certificates:ro"
-      - "./auth:/etc/traefik/auth:ro"  # Mount the auth directory
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"  # Docker socket for Traefik
+      - "./traefik.yml:/etc/traefik/traefik.yml:ro"  # Traefik configuration file
+      - "./certs:/etc/traefik/certificates:ro"  # Certificates for Traefik
+      - "./auth:/etc/traefik/auth:ro"  # Authentication files for Traefik
     networks:
-      - garage-network
+      - garage-network  # Network for Traefik
 
   #################################################################
   # 3) Nginx for Static Files
   #################################################################
   nginx-static:
     build:
-      context: ./src/main/resources
-      dockerfile: ./Dockerfile
+      context: ./src/main/resources  # Build context for Nginx
+      dockerfile: ./Dockerfile  # Dockerfile for Nginx
     volumes:
-      - ./src/main/resources/static:/usr/share/nginx/html:ro
-      - ./src/main/resources/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./src/main/resources/static:/usr/share/nginx/html:ro  # Static files for Nginx
+      - ./src/main/resources/nginx.conf:/etc/nginx/nginx.conf:ro  # Nginx configuration file
     expose:
-      - "80"
-    restart: unless-stopped
+      - "80"  # Expose Nginx on port 80
+    restart: unless-stopped  # Restart policy for Nginx
     networks:
-      - garage-network
+      - garage-network  # Network for Nginx
     labels:
-      - "traefik.enable=true"
+      - "traefik.enable=true"  # Enable Traefik for Nginx
       # Route: Host-based routing for the static site with HTTPS
-      - "traefik.http.routers.static.rule=Host(`localhost`)"
-      - "traefik.http.routers.static.entrypoints=websecure"
-      - "traefik.http.routers.static.tls=true"
+      - "traefik.http.routers.static.rule=Host(`localhost`)"  # Routing rule for Nginx
+      - "traefik.http.routers.static.entrypoints=websecure"  # Entry point for Nginx
+      - "traefik.http.routers.static.tls=true"  # Enable TLS for Nginx
       # Define the service port
-      - "traefik.http.services.static.loadbalancer.server.port=80"
+      - "traefik.http.services.static.loadbalancer.server.port=80"  # Service port for Nginx
 
   #################################################################
   # 4) Spring Boot App
   #################################################################
   spring-app:
-    build: .
+    build: .  # Build context for Spring Boot app
     depends_on:
       bdr-postgresql:
-        condition: service_healthy
+        condition: service_healthy  # Dependency on PostgreSQL service
     expose:
-      - "8080"
+      - "8080"  # Expose Spring Boot app on port 8080
     networks:
-      - garage-network
+      - garage-network  # Network for Spring Boot app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://bdr-postgresql:5432/bdr
-      SPRING_DATASOURCE_USERNAME: bdr
-      SPRING_DATASOURCE_PASSWORD: bdr
+      SPRING_DATASOURCE_URL: jdbc:postgresql://bdr-postgresql:5432/bdr  # Data source URL for Spring Boot app
+      SPRING_DATASOURCE_USERNAME: bdr  # Data source username for Spring Boot app
+      SPRING_DATASOURCE_PASSWORD: bdr  # Data source password for Spring Boot app
     labels:
-      - "traefik.enable=true"
+      - "traefik.enable=true"  # Enable Traefik for Spring Boot app
       # Path-based routing for dynamic requests => /api => spring-app with HTTPS
-      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls=true"
-      - "traefik.http.services.api.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api.rule=Host(`localhost`) && PathPrefix(`/api`)"  # Routing rule for Spring Boot app
+      - "traefik.http.routers.api.entrypoints=websecure"  # Entry point for Spring Boot app
+      - "traefik.http.routers.api.tls=true"  # Enable TLS for Spring Boot app
+      - "traefik.http.services.api.loadbalancer.server.port=8080"  # Service port for Spring Boot app
       # Sticky sessions
-      - "traefik.http.services.api.loadbalancer.sticky.cookie=true"
-      - "traefik.http.services.api.loadbalancer.sticky.cookie.name=MyStickyCookie"
+      - "traefik.http.services.api.loadbalancer.sticky.cookie=true"  # Enable sticky sessions
+      - "traefik.http.services.api.loadbalancer.sticky.cookie.name=MyStickyCookie"  # Cookie name for sticky sessions
 
   #################################################################
   # 5) Portainer (Optional)
@@ -99,18 +107,18 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     ports:
-      - "9000:9000"
+      - "9000:9000"  # Expose Portainer on port 9000
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"  # Access Docker API
-      - "portainer_data:/data"                       # Persist data
+      - "portainer_data:/data"  # Persist data for Portainer
     networks:
-      - garage-network
+      - garage-network  # Network for Portainer
 
 volumes:
-  portainer_data:
-  postgres_data:
+  portainer_data:  # Volume for Portainer data
+  postgres_data:  # Volume for PostgreSQL data
 
 networks:
   garage-network:
-    driver: bridge
-    name: garage-network
+    driver: bridge  # Network driver
+    name: garage-network  # Network name
