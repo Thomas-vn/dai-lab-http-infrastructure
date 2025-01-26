@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Cars</title>
+  <!-- Bootstrap CSS for styling -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 50px;
+      background-color: #f8f9fa;
+    }
+    .container {
+      max-width: 1200px;
+    }
+    .table-responsive {
+      margin-top: 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/static">Garage Management</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/mechanics">Mechanics</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/clients">Clients</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/searchAuto">Search Auto</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/addCar">Add Car</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/carsforsale">Cars for Sale</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/reparation">Reparations</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <h1 class="text-center mb-4">Search Cars</h1>
+
+  <!-- Search by Marque -->
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Search Cars by Marque</h5>
+      <form id="searchByMarqueForm">
+        <div class="mb-3">
+          <label for="marque" class="form-label">Marque (leave empty to show all cars)</label>
+          <input type="text" class="form-control" id="marque" placeholder="e.g., Toyota">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered mt-4" id="resultsTable">
+      <thead class="table-dark">
+      <tr>
+        <th>Numero Chassis</th>
+        <th>Marque</th>
+        <th>Type Carrosserie</th>
+        <th>Couleur</th>
+        <th>Date Fabrication</th>
+        <th>Nombre Places</th>
+        <th>Prix</th>
+        <th>Nombre Portes</th>
+        <th>Puissance</th>
+        <th>Description Options</th>
+        <th>Date Expertise</th>
+        <th>Type Combustible</th>
+        <th>Nombre Km</th>
+        <th>Type Boite Vitesse</th>
+        <th>Consommation</th>
+        <th>Neuf</th>
+        <th>Garantie</th>
+        <th>Date Fin Garantie</th>
+        <th>En Vente</th>
+        <th>Propriétaire NoAVS</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- Results will be populated here -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  // Wait until the document is fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Load all cars when the page loads
+    fetchCars();
+
+    // Handle Search by Marque when the search form is submitted
+    document.getElementById('searchByMarqueForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+      fetchCars(); // Fetch cars based on the marque search input
+    });
+
+    // Function to fetch car data from the API
+    function fetchCars() {
+      const marque = document.getElementById('marque').value.trim(); // Get the marque input value
+      const url = marque ? `/api/voitures/marque/${encodeURIComponent(marque)}` : '/api/voitures'; // Build the URL based on the marque value
+
+      fetch(url) // Make the API request
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok'); // Handle network errors
+                }
+                return response.json(); // Parse the JSON response
+              })
+              .then(data => displayResults(data)) // If successful, display the car results
+              .catch(error => handleError(error)); // If there's an error, handle it
+    }
+
+    // Function to display the fetched car data in the table
+    function displayResults(voitures) {
+      const tbody = document.getElementById('resultsTable').getElementsByTagName('tbody')[0]; // Get the table body
+      tbody.innerHTML = ''; // Clear any previous results
+
+      // If no cars are found or the response is not an array, display a message
+      if (!Array.isArray(voitures) || voitures.length === 0) {
+        const row = tbody.insertRow(); // Create a new table row
+        const cell = row.insertCell(0); // Create a new cell in the row
+        cell.colSpan = 20; // Make the cell span all columns
+        cell.className = 'text-center'; // Center align the text
+        cell.textContent = 'No results found.'; // Display a "No results" message
+        return;
+      }
+
+      // For each car, add a new row to the table with the car's details
+      voitures.forEach(voiture => {
+        const row = tbody.insertRow(); // Create a new row for each car
+        row.innerHTML = `
+                <td>${voiture.numeroChassis || 'N/A'}</td>
+                <td>${voiture.marque || 'N/A'}</td>
+                <td>${voiture.typeCarrosserie || 'N/A'}</td>
+                <td>${voiture.couleur || 'N/A'}</td>
+                <td>${voiture.dateFabrication || 'N/A'}</td>
+                <td>${voiture.nombrePlaces || 'N/A'}</td>
+                <td>${voiture.prix ? voiture.prix.toFixed(2) : 'N/A'}</td>
+                <td>${voiture.nombrePortes || 'N/A'}</td>
+                <td>${voiture.puissance || 'N/A'}</td>
+                <td>${voiture.descriptionOptions || 'N/A'}</td>
+                <td>${voiture.dateExpertise || 'N/A'}</td>
+                <td>${voiture.typeCombustible || 'N/A'}</td>
+                <td>${voiture.nombreKm || 'N/A'}</td>
+                <td>${voiture.typeBoiteVitesse || 'N/A'}</td>
+                <td>${voiture.consommation ? voiture.consommation.toFixed(2) : 'N/A'}</td>
+                <td>${voiture.neuf ? 'Oui' : 'Non'}</td>
+                <td>${voiture.garantie ? 'Oui' : 'Non'}</td>
+                <td>${voiture.dateFinGarantie || 'N/A'}</td>
+                <td>${voiture.enVente ? 'Oui' : 'Non'}</td>
+                <td>${voiture.proprietaireNoAVS || 'N/A'}</td>
+            `;
+      });
+    }
+
+    // Function to handle errors in the fetch process
+    function handleError(error) {
+      console.error('Error:', error); // Log the error to the console
+      alert('An error occurred while fetching data. Please try again.'); // Show an alert to the user
+    }
+  });
+</script>
+</body>
+</html>

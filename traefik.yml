@@ -1,0 +1,81 @@
+# traefik.yaml
+
+# Define entrypoints for HTTP and HTTPS
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure  # Redirect HTTP to HTTPS
+          scheme: https  # Use HTTPS scheme
+  websecure:
+    address: ":443"  # HTTPS entry point
+
+# Enable the Docker provider
+providers:
+  docker:
+    exposedByDefault: false  # Do not expose containers by default
+
+# Define TLS settings using the self-signed certificate
+tls:
+  certificates:
+    certFile: /etc/traefik/certificates/traefik.crt  # Path to the certificate file
+    keyFile: /etc/traefik/certificates/traefik.key  # Path to the key file
+
+# Configure the Traefik dashboard
+api:
+  dashboard: true  # Enable the dashboard
+  insecure: true  # Enable insecure mode for the dashboard
+
+# HTTP Configuration
+http:
+  routers:
+    dashboard:
+      rule: "Host(`localhost`) && PathPrefix(`/dashboard`)"  # Routing rule for the dashboard
+      entryPoints:
+        - websecure  # Use HTTPS entry point
+      service: api@internal  # Use internal API service
+      tls: {}  # Enable TLS
+      middlewares:
+        - auth  # Use authentication middleware
+
+    http-catchall:
+      rule: "HostRegexp(`{host:.+}`)"  # Catch-all rule for HTTP
+      entryPoints:
+        - web  # Use HTTP entry point
+      middlewares:
+        - redirect-to-https  # Redirect to HTTPS
+      service: noop  # Use a dummy service
+
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https  # Redirect to HTTPS
+        permanent: true  # Use permanent redirect
+    auth:
+      basicAuth:
+        usersFile: /etc/traefik/auth/traefik_auth  # Path to the authentication file
+
+  services:
+    web-service:
+      loadBalancer:
+        servers:
+          - url: "http://web-service-instance1:80"  # URL of the first web service instance
+          - url: "http://web-service-instance2:80"  # URL of the second web service instance
+          - url: "http://web-service-instance3:80"  # URL of the third web service instance
+
+    dynamic-api:
+      loadBalancer:
+        servers:
+          - url: "http://dynamic-api-instance1:80"  # URL of the first dynamic API instance
+          - url: "http://dynamic-api-instance2:80"  # URL of the second dynamic API instance
+          - url: "http://dynamic-api-instance3:80"  # URL of the third dynamic API instance
+            sticky: true  # Enable sticky sessions for the dynamic API
+            cookie:
+              name: "api_cookie"  # Name of the sticky session cookie
+
+    noop:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1"  # Dummy service URL

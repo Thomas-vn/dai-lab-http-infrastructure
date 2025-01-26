@@ -41,6 +41,38 @@
 </head>
 <body>
 
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/static">Garage Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/mechanics">Mechanics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clients">Clients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/searchAuto">Search Auto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/addCar">Add Car</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/carsforsale">Cars for Sale</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reparation">Reparations</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="container">
     <div class="form-container">
         <h2 class="text-center mb-4">Create a New Voiture</h2>
@@ -217,74 +249,83 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Fonction pour charger les clients (propriétaires potentiels)
+    // Function to load clients (potential owners) from the API
     async function loadClients() {
         try {
-            const response = await fetch('/api/clients');
-            const clients = await response.json();
-            const proprietaireSelect = document.getElementById('proprietaire');
+            const response = await fetch('/api/clients'); // Fetch clients data from the server
+            const clients = await response.json(); // Parse the response as JSON
+            const proprietaireSelect = document.getElementById('proprietaire'); // Get the dropdown element
+            // Reset the dropdown with a placeholder option
             proprietaireSelect.innerHTML = '<option value="" disabled selected>Sélectionnez un propriétaire</option>';
+            // Populate the dropdown with client options
             clients.forEach(client => {
-                const option = document.createElement('option');
-                option.value = client.noAVS;
-                option.textContent = `${client.nom} ${client.prenom} (${client.noAVS})`;
-                proprietaireSelect.appendChild(option);
+                const option = document.createElement('option'); // Create a new option element
+                option.value = client.noAVS; // Set the value of the option to the client's noAVS
+                option.textContent = `${client.nom} ${client.prenom} (${client.noAVS})`; // Set the text for the option
+                proprietaireSelect.appendChild(option); // Add the option to the dropdown
             });
         } catch (error) {
-            console.error('Erreur lors du chargement des clients:', error);
-            alert('Erreur lors du chargement des clients');
+            console.error('Erreur lors du chargement des clients:', error); // Log errors to the console
+            alert('Erreur lors du chargement des clients'); // Show an alert for loading errors
         }
     }
 
+    // Event listener for the form submission
     document.getElementById('voitureForm').addEventListener('submit', function(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent the default form submission behavior
 
+        // Collect form data
         const formData = new FormData(this);
         const data = {};
+        // Loop through form data and format it properly
         formData.forEach((value, key) => {
             if (key === 'neuf' || key === 'garantie' || key === 'enVente') {
+                // Convert boolean string values to actual booleans
                 data[key] = value === 'true';
             } else if (key === 'proprietaire') {
+                // Format the owner as an object
                 data[key] = { noAVS: value };
             } else {
-                data[key] = value;
+                data[key] = value; // Add other form fields as they are
             }
         });
 
+        // Send a POST request to create a new car (voiture)
         fetch('/api/voitures', {
-            method: 'POST',
+            method: 'POST', // HTTP method
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json', // Set the request content type to JSON
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data) // Send the form data as a JSON string
         })
             .then(response => {
                 if (response.ok) {
-                    alert('Voiture created successfully!');
-                    this.reset();
+                    alert('Voiture created successfully!'); // Alert success
+                    this.reset(); // Reset the form after successful submission
                 } else {
-                    alert('Error creating voiture');
+                    alert('Error creating voiture'); // Alert error on unsuccessful response
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred');
+                console.error('Error:', error); // Log errors to the console
+                alert('An error occurred'); // Show a general error alert
             });
     });
 
-    // Charger les clients au chargement de la page
+    // Load clients when the page is fully loaded
     document.addEventListener('DOMContentLoaded', () => {
-        loadClients();
+        loadClients(); // Call the function to fetch and populate clients
     });
 
-    // Show/hide date fin garantie based on garantie selection
+    // Show or hide the "date fin garantie" field based on "garantie" selection
     document.querySelectorAll('input[name="garantie"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            const dateFinGarantieField = document.getElementById('dateFinGarantie');
+            const dateFinGarantieField = document.getElementById('dateFinGarantie'); // Get the date field element
+            // Make the date field required or disabled based on the selected value
             dateFinGarantieField.required = this.value === 'true';
             dateFinGarantieField.disabled = this.value === 'false';
             if (this.value === 'false') {
-                dateFinGarantieField.value = '';
+                dateFinGarantieField.value = ''; // Clear the field value if "garantie" is false
             }
         });
     });

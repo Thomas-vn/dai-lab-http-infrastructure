@@ -7,6 +7,37 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/static">Garage Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/mechanics">Mechanics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clients">Clients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/searchAuto">Search Auto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/addCar">Add Car</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/carsforsale">Cars for Sale</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reparation">Reparations</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
     <div class="container mt-5">
         <h1 class="mb-4">Voitures à Vendre</h1>
 
@@ -110,8 +141,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Initialize an empty array to store car data
         let currentCars = [];
 
+        // Function to format numbers as currency in CHF (Swiss Franc)
         function formatMoney(amount) {
             return new Intl.NumberFormat('fr-CH', {
                 style: 'currency',
@@ -119,71 +152,77 @@
             }).format(amount);
         }
 
+        // Function to format date strings to the Swiss format (dd.mm.yyyy)
         function formatDate(dateString) {
             return new Date(dateString).toLocaleDateString('fr-CH');
         }
 
+        // Function to display an alert message (e.g., success or error)
         function showAlert(message, type) {
             const alert = document.getElementById('alertMessage');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            alert.classList.remove('d-none');
-            setTimeout(() => alert.classList.add('d-none'), 3000);
+            alert.className = `alert alert-${type}`; // Sets the type of alert (success, danger, etc.)
+            alert.textContent = message; // Sets the message
+            alert.classList.remove('d-none'); // Shows the alert
+            setTimeout(() => alert.classList.add('d-none'), 3000); // Hides the alert after 3 seconds
         }
 
+        // Function to create a card element for each car
         function createCarCard(car) {
             return `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="/images/car-placeholder.jpg" class="card-img-top" alt="Voiture">
-                        <div class="card-body">
-                            <h5 class="card-title">${car.marque}</h5>
-                            <p class="card-text">
-                                <strong>Prix:</strong> ${formatMoney(car.prix)}<br>
-                                <strong>Type:</strong> ${car.typeCarrosserie}<br>
-                                <strong>Kilométrage:</strong> ${car.nombreKm} km
-                            </p>
-                            <button class="btn btn-primary" onclick="showCarDetails('${car.numeroChassis}')">
-                                <i class="fas fa-info-circle"></i> Détails
-                            </button>
-                        </div>
-                    </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="/images/car-placeholder.jpg" class="card-img-top" alt="Voiture">
+                <div class="card-body">
+                    <h5 class="card-title">${car.marque}</h5>
+                    <p class="card-text">
+                        <strong>Prix:</strong> ${formatMoney(car.prix)}<br>
+                        <strong>Type:</strong> ${car.typeCarrosserie}<br>
+                        <strong>Kilométrage:</strong> ${car.nombreKm} km
+                    </p>
+                    <button class="btn btn-primary" onclick="showCarDetails('${car.numeroChassis}')">
+                        <i class="fas fa-info-circle"></i> Détails
+                    </button>
                 </div>
-            `;
+            </div>
+        </div>
+    `;
         }
 
+        // Function to load cars based on selected filters
         function loadCars() {
             const marque = document.getElementById('marqueFilter').value;
             const typeCarrosserie = document.getElementById('typeCarrosserieFilter').value;
             const prixMin = document.getElementById('prixMinFilter').value;
             const prixMax = document.getElementById('prixMaxFilter').value;
 
-            let url = '/api/ventes/voitures?enVente=true';
-            if (marque) url += `&marque=${encodeURIComponent(marque)}`;
-            if (typeCarrosserie) url += `&typeCarrosserie=${encodeURIComponent(typeCarrosserie)}`;
-            if (prixMin) url += `&prixMin=${encodeURIComponent(prixMin)}`;
-            if (prixMax) url += `&prixMax=${encodeURIComponent(prixMax)}`;
+            let url = '/api/ventes/voitures?enVente=true'; // Base URL for fetching cars
+            if (marque) url += `&marque=${encodeURIComponent(marque)}`; // Add marque filter if selected
+            if (typeCarrosserie) url += `&typeCarrosserie=${encodeURIComponent(typeCarrosserie)}`; // Add body type filter if selected
+            if (prixMin) url += `&prixMin=${encodeURIComponent(prixMin)}`; // Add min price filter if selected
+            if (prixMax) url += `&prixMax=${encodeURIComponent(prixMax)}`; // Add max price filter if selected
 
-            fetch(url)
-                .then(response => response.json())
+            fetch(url) // Fetch cars from the API
+                .then(response => response.json()) // Parse the response as JSON
                 .then(cars => {
-                    currentCars = cars;
+                    currentCars = cars; // Store the fetched cars in the global array
                     const carsGrid = document.getElementById('carsGrid');
                     if (cars.length === 0) {
-                        carsGrid.innerHTML = '<div class="col-12"><div class="alert alert-info">Aucune voiture ne correspond à vos critères.</div></div>';
+                        carsGrid.innerHTML = '<div class="col-12"><div class="alert alert-info">Aucune voiture ne correspond à vos critères.</div></div>'; // Display message if no cars match the filters
                     } else {
-                        carsGrid.innerHTML = cars.map(car => createCarCard(car)).join('');
+                        carsGrid.innerHTML = cars.map(car => createCarCard(car)).join(''); // Create and display car cards
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    showAlert('Erreur lors du chargement des voitures', 'danger');
+                    console.error('Error:', error); // Log error in case of failure
+                    showAlert('Erreur lors du chargement des voitures', 'danger'); // Show error alert
                 });
         }
 
+        // Function to show detailed information about a specific car in a modal
         function showCarDetails(numeroChassis) {
-            const car = currentCars.find(c => c.numeroChassis === numeroChassis);
+            const car = currentCars.find(c => c.numeroChassis === numeroChassis); // Find the car by its chassis number
             if (car) {
+                // Populate modal with car details
                 document.getElementById('modalNumeroChassis').textContent = car.numeroChassis;
                 document.getElementById('modalMarque').textContent = car.marque;
                 document.getElementById('modalType').textContent = car.typeCarrosserie;
@@ -193,22 +232,25 @@
                 document.getElementById('modalOptions').textContent = car.descriptionOptions || 'Aucune option spécifiée';
 
                 const modal = new bootstrap.Modal(document.getElementById('carDetailsModal'));
-                modal.show();
+                modal.show(); // Show the modal with car details
             }
         }
 
+        // Function to apply selected filters and load filtered cars
         function applyFilters() {
             loadCars();
         }
 
+        // Function to reset all filters and reload the car list
         function resetFilters() {
             document.getElementById('marqueFilter').value = '';
             document.getElementById('typeCarrosserieFilter').value = '';
             document.getElementById('prixMinFilter').value = '';
             document.getElementById('prixMaxFilter').value = '';
-            loadCars();
+            loadCars(); // Reload cars without filters
         }
 
+        // Load cars when the page is ready
         document.addEventListener('DOMContentLoaded', loadCars);
     </script>
 </body>
